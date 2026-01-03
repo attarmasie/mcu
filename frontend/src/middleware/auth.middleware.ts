@@ -26,5 +26,5 @@ export const AuthMiddleware = (context: ContextOptions<any, any>) => {
     }
   }
 
-    return;
+  return;
 };

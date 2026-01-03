@@ -1,8 +1,36 @@
-import Axios, { type AxiosRequestConfig } from 'axios';
+import Axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
 
 export const AXIOS_INSTANCE = Axios.create({
   baseURL: 'http://localhost:8080/api/v1',
 });
+
+AXIOS_INSTANCE.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const token = sessionStorage.getItem('authToken');
+    
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+AXIOS_INSTANCE.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      sessionStorage.removeItem('authToken');
+      
+      window.location.href = '/';
+    }
+    
+    return Promise.reject(error);
+  }
+);
 
 export const customInstance = <T>(
   config: AxiosRequestConfig,

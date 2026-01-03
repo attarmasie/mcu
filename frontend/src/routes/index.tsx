@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/schemas/auth.schema";
 import { zodValidator } from "@/lib/zodFormValidator";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { AuthMiddleware } from "@/middleware/auth.middleware";
 
 export const Route = createFileRoute("/")({
@@ -31,7 +31,7 @@ const LoginPage = () => {
     },
 
     onSubmit: async ({ value }) => {
-      await login(value);
+      await login.mutate(value);
     },
   });
 
