@@ -5,26 +5,25 @@ export const AuthMiddleware = (context: ContextOptions<any, any>) => {
   const filePath = context.location.pathname;
   try {
     if (!authToken && filePath !== "/") {
-      return redirect({
+      throw redirect({
         to: "/",
         search: context.location.search,
       });
     }
 
     if (authToken && filePath === "/") {
-      return redirect({
+      throw redirect({
         to: "/dashboard",
         search: context.location.search,
       });
     }
   } catch (error) {
     if (!authToken) {
-      return redirect({
+      throw redirect({
         to: "/",
         search: context.location.search,
       });
     }
+    throw error;
   }
-
-  return;
 };

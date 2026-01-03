@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { loginSchema } from "@/schemas/auth.schema";
-import { zodValidator } from "@/lib/zodFormValidator";
+import { zodValidator } from "@/lib/zod-form-validator";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthMiddleware } from "@/middleware/auth.middleware";
 

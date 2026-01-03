@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "generate": "orval"
+    "generate": "npm run generate:api && npm run generate:rbac",
+    "generate:api": "orval",
+    "generate:rbac": "tsx cmd/generate-rbac.ts ../contracts/openapi.bundled.yaml src/generated/rbac.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
