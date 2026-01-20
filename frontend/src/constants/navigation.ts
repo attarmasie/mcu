@@ -44,20 +44,20 @@ export const NAVIGATION: NavigationItem[] = [
     url: "/users",
     icon: Users,
     checkPath: "/users",  // Check if user can access /users
-    items: [
-      {
-        title: "All Users",
-        url: "/users",
-        checkPath: "/users",
-        checkMethod: "GET",
-      },
-      {
-        title: "Create User",
-        url: "/users/create",
-        checkPath: "/users",
-        checkMethod: "POST",
-      },
-    ],
+    // items: [
+    //   {
+    //     title: "All Users",
+    //     url: "/users",
+    //     checkPath: "/users",
+    //     checkMethod: "GET",
+    //   },
+    //   {
+    //     title: "Create User",
+    //     url: "/users/create",
+    //     checkPath: "/users",
+    //     checkMethod: "POST",
+    //   },
+    // ],
   },
   {
     title: "Patients",
