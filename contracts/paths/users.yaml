@@ -8,8 +8,8 @@ users:
     security:
       - BearerAuth: [admin]
     parameters:
-      - $ref: '../components/parameters.yaml#/PageParam'
-      - $ref: '../components/parameters.yaml#/PerPageParam'
+      - $ref: '../parameters/common.yaml#/PageParam'
+      - $ref: '../parameters/common.yaml#/PerPageParam'
     responses:
       '200':
         description: Success
@@ -68,7 +68,7 @@ users_by_id:
     security:
       - BearerAuth: [admin]
     parameters:
-      - $ref: '../components/parameters.yaml#/IdParam'
+      - $ref: '../parameters/common.yaml#/IdParam'
     responses:
       '200':
         description: Success
@@ -93,7 +93,7 @@ users_by_id:
     security:
       - BearerAuth: [admin]
     parameters:
-      - $ref: '../components/parameters.yaml#/IdParam'
+      - $ref: '../parameters/common.yaml#/IdParam'
     requestBody:
       required: true
       content:
@@ -124,7 +124,7 @@ users_by_id:
     security:
       - BearerAuth: [admin]
     parameters:
-      - $ref: '../components/parameters.yaml#/IdParam'
+      - $ref: '../parameters/common.yaml#/IdParam'
     responses:
       '204':
         description: User deleted

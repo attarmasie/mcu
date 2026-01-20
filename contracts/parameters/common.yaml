@@ -33,4 +33,3 @@ SearchParam:
   schema:
     type: string
   description: Search query
-

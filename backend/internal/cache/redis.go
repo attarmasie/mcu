@@ -9,9 +9,22 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// Cache interface - all cache implementations must satisfy this
+type Cache interface {
+	Get(ctx context.Context, key string, dest interface{}) error
+	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	Delete(ctx context.Context, key string) error
+	DeletePattern(ctx context.Context, pattern string) error
+	Close() error
+}
+
+// RedisCache implements Cache using Redis
 type RedisCache struct {
 	client *redis.Client
 }
+
+// NoOpCache implements Cache but does nothing (for disabled cache)
+type NoOpCache struct{}
 
 func NewRedisCache(addr, password string, db int) (*RedisCache, error) {
 	client := redis.NewClient(&redis.Options{
@@ -32,6 +45,11 @@ func NewRedisCache(addr, password string, db int) (*RedisCache, error) {
 	}
 
 	return &RedisCache{client: client}, nil
+}
+
+// NewNoOpCache returns a cache that does nothing
+func NewNoOpCache() *NoOpCache {
+	return &NoOpCache{}
 }
 
 func (r *RedisCache) Get(ctx context.Context, key string, dest interface{}) error {
@@ -71,4 +89,25 @@ func (r *RedisCache) DeletePattern(ctx context.Context, pattern string) error {
 
 func (r *RedisCache) Close() error {
 	return r.client.Close()
+}
+
+// NoOpCache methods - do nothing but satisfy the interface
+func (n *NoOpCache) Get(ctx context.Context, key string, dest interface{}) error {
+	return fmt.Errorf("cache disabled")
+}
+
+func (n *NoOpCache) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
+	return nil
+}
+
+func (n *NoOpCache) Delete(ctx context.Context, key string) error {
+	return nil
+}
+
+func (n *NoOpCache) DeletePattern(ctx context.Context, pattern string) error {
+	return nil
+}
+
+func (n *NoOpCache) Close() error {
+	return nil
 }

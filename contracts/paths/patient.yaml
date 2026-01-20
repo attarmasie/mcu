@@ -6,10 +6,13 @@ patients:
     tags:
       - patients
     security:
-      - BearerAuth: []
+      - BearerAuth: [admin]
     parameters:
-      - $ref: '../components/parameters.yaml#/PageParam'
-      - $ref: '../components/parameters.yaml#/PerPageParam'
+      - $ref: '../parameters/common.yaml#/PageParam'
+      - $ref: '../parameters/common.yaml#/PerPageParam'
+      - $ref: '../parameters/common.yaml#/SearchParam'
+      - $ref: '../parameters/patient.yaml#/PatientGenderParam'
+      - $ref: '../parameters/patient.yaml#/PatientTypeParam'
     responses:
       '200':
         description: Success
@@ -36,7 +39,7 @@ patients:
     tags:
       - patients
     security:
-      - BearerAuth: []
+      - BearerAuth: [admin]
     requestBody:
       required: true
       content:
@@ -66,9 +69,9 @@ patients_by_id:
     tags:
       - patients
     security:
-      - BearerAuth: []
+      - BearerAuth: [admin]
     parameters:
-      - $ref: '../components/parameters.yaml#/IdParam'
+      - $ref: '../parameters/common.yaml#/IdParam'
     responses:
       '200':
         description: Success
@@ -91,9 +94,9 @@ patients_by_id:
     tags:
       - patients
     security:
-      - BearerAuth: []
+      - BearerAuth: [admin]
     parameters:
-      - $ref: '../components/parameters.yaml#/IdParam'
+      - $ref: '../parameters/common.yaml#/IdParam'
     requestBody:
       required: true
       content:
@@ -122,9 +125,9 @@ patients_by_id:
     tags:
       - patients
     security:
-      - BearerAuth: []
+      - BearerAuth: [admin]
     parameters:
-      - $ref: '../components/parameters.yaml#/IdParam'
+      - $ref: '../parameters/common.yaml#/IdParam'
     responses:
       '204':
         description: Patient deleted

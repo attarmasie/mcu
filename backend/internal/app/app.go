@@ -21,7 +21,7 @@ import (
 type App struct {
 	config *config.Config
 	db     *gorm.DB
-	cache  *cache.RedisCache
+	cache  cache.Cache
 	server *http.Server
 }
 
@@ -79,7 +79,8 @@ func (a *App) initDatabase() error {
 
 func (a *App) initCache() error {
 	if !a.config.Redis.Enabled {
-		log.Println("ℹ Redis cache is disabled")
+		log.Println("ℹ Redis cache is disabled, using NoOp cache")
+		a.cache = cache.NewNoOpCache()
 		return nil
 	}
 
@@ -89,7 +90,9 @@ func (a *App) initCache() error {
 		a.config.Redis.DB,
 	)
 	if err != nil {
-		return err
+		log.Printf("Warning: Failed to connect to Redis, using NoOp cache: %v", err)
+		a.cache = cache.NewNoOpCache()
+		return nil
 	}
 
 	a.cache = redisCache
@@ -168,12 +171,10 @@ func (a *App) Shutdown(ctx context.Context) error {
 	}
 
 	// Close Redis connection
-	if a.cache != nil {
-		if err := a.cache.Close(); err != nil {
-			log.Printf("Warning: Failed to close Redis: %v", err)
-		} else {
-			log.Println("✓ Redis connection closed")
-		}
+	if err := a.cache.Close(); err != nil {
+		log.Printf("Warning: Failed to close cache: %v", err)
+	} else {
+		log.Println("✓ Cache connection closed")
 	}
 
 	return nil
@@ -183,7 +184,7 @@ func (a *App) GetDB() *gorm.DB {
 	return a.db
 }
 
-func (a *App) GetCache() *cache.RedisCache {
+func (a *App) GetCache() cache.Cache {
 	return a.cache
 }
 

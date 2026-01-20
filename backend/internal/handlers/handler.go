@@ -8,18 +8,18 @@ import (
 
 type CombinedHandler struct {
 	*UserHandler
-	*ProductHandler
+	*PatientHandler
 	*AuthHandler
 }
 
 func NewCombinedHandler(
 	userService service.UserService,
-	productService service.ProductService,
+	patientService service.PatientService,
 	authService service.AuthService,
 ) *CombinedHandler {
 	return &CombinedHandler{
 		UserHandler:    NewUserHandler(userService),
-		ProductHandler: NewProductHandler(productService),
+		PatientHandler: NewPatientHandler(patientService),
 		AuthHandler:    NewAuthHandler(authService),
 	}
 }

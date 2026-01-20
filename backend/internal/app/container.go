@@ -11,28 +11,28 @@ import (
 
 type Container struct {
 	UserHandler    *handlers.UserHandler
-	ProductHandler *handlers.ProductHandler
+	PatientHandler *handlers.PatientHandler
 	AuthHandler    *handlers.AuthHandler
 }
 
-func NewContainer(db *gorm.DB, cache *cache.RedisCache) *Container {
+func NewContainer(db *gorm.DB, cache cache.Cache) *Container {
 	// repositories
 	userRepo := repository.NewUserRepository(db)
-	productRepo := repository.NewProductRepository(db)
+	patientRepo := repository.NewPatientRepository(db)
 
 	// services
 	userService := service.NewUserService(userRepo, cache)
-	productService := service.NewProductService(productRepo, cache)
+	patientService := service.NewPatientService(patientRepo, cache)
 	authService := service.NewAuthService(userRepo)
 
 	// handlers
 	userHandler := handlers.NewUserHandler(userService)
-	productHandler := handlers.NewProductHandler(productService)
+	patientHandler := handlers.NewPatientHandler(patientService)
 	authHandler := handlers.NewAuthHandler(authService)
 
 	return &Container{
 		UserHandler:    userHandler,
-		ProductHandler: productHandler,
+		PatientHandler: patientHandler,
 		AuthHandler:    authHandler,
 	}
 }
@@ -40,7 +40,7 @@ func NewContainer(db *gorm.DB, cache *cache.RedisCache) *Container {
 func (c *Container) Handlers() *handlers.CombinedHandler {
 	return &handlers.CombinedHandler{
 		UserHandler:    c.UserHandler,
-		ProductHandler: c.ProductHandler,
+		PatientHandler: c.PatientHandler,
 		AuthHandler:    c.AuthHandler,
 	}
 }

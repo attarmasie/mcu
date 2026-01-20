@@ -1,4 +1,5 @@
 import { canAccessRoute } from "@/generated/rbac";
+import { usePatientList } from "@/hooks/use-patient";
 import { DashboardLayout } from "@/layouts/dashboard-layout";
 import { protectedRoute } from "@/middleware/helper/presets";
 import { createFileRoute } from "@tanstack/react-router";
@@ -9,10 +10,13 @@ export const Route = createFileRoute("/dashboard/")({
 });
 
 function RouteComponent() {
-  const canCreate = canAccessRoute('user', '/users', 'POST');
+  const canCreate = canAccessRoute('admin', '/users', 'POST');
+  const{  
+    data
+  } = usePatientList();
+   console.log('Can create users:', canCreate);
 
-  console.log('Can create users:', canCreate);
-
+   console.log('Patients data:', data);
   return (
     <DashboardLayout
       breadcrumb={[{ type: "page", label: "Dashboard" }]}

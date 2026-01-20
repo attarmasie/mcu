@@ -46,12 +46,22 @@ paths:
 
 components:
   parameters:
+
+    # Common parameters
     PageParam:
-      $ref: './components/parameters.yaml#/PageParam'
+      $ref: './parameters/common.yaml#/PageParam'
     PerPageParam:
-      $ref: './components/parameters.yaml#/PerPageParam'
+      $ref: './parameters/common.yaml#/PerPageParam'
     IdParam:
-      $ref: './components/parameters.yaml#/IdParam'
+      $ref: './parameters/common.yaml#/IdParam'
+    SearchParam:
+      $ref: './parameters/common.yaml#/SearchParam'
+
+    # Patient parameters
+    PatientGenderParam:
+      $ref: './parameters/patient.yaml#/PatientGenderParam'
+    PatientTypeParam:
+      $ref: './parameters/patient.yaml#/PatientTypeParam'
 
   responses:
     BadRequest:

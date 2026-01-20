@@ -1,0 +1,23 @@
+SearchParam:
+  name: search
+  in: query
+  schema:
+    type: string
+  description: Search across full_name, phone_number, email, medical_record_number (partial match, case-insensitive)
+
+PatientGenderParam:
+  name: gender
+  in: query
+  schema:
+    type: string
+    enum: [male, female, other]
+  description: Filter by gender
+
+PatientTypeParam:
+  name: patient_type
+  in: query
+  schema:
+    type: string
+    enum: [teacher, student, general]
+  description: Filter by patient type
+

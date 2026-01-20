@@ -256,10 +256,14 @@ paths:
       tags:
         - patients
       security:
-        - BearerAuth: []
+        - BearerAuth:
+            - admin
       parameters:
         - $ref: '#/components/parameters/PageParam'
         - $ref: '#/components/parameters/PerPageParam'
+        - $ref: '#/components/parameters/SearchParam'
+        - $ref: '#/components/parameters/PatientGenderParam'
+        - $ref: '#/components/parameters/PatientTypeParam'
       responses:
         '200':
           description: Success
@@ -285,7 +289,8 @@ paths:
       tags:
         - patients
       security:
-        - BearerAuth: []
+        - BearerAuth:
+            - admin
       requestBody:
         required: true
         content:
@@ -314,7 +319,8 @@ paths:
       tags:
         - patients
       security:
-        - BearerAuth: []
+        - BearerAuth:
+            - admin
       parameters:
         - $ref: '#/components/parameters/IdParam'
       responses:
@@ -338,7 +344,8 @@ paths:
       tags:
         - patients
       security:
-        - BearerAuth: []
+        - BearerAuth:
+            - admin
       parameters:
         - $ref: '#/components/parameters/IdParam'
       requestBody:
@@ -368,7 +375,8 @@ paths:
       tags:
         - patients
       security:
-        - BearerAuth: []
+        - BearerAuth:
+            - admin
       parameters:
         - $ref: '#/components/parameters/IdParam'
       responses:
@@ -406,6 +414,32 @@ components:
         format: uuid
       description: Resource UUID
       example: 123e4567-e89b-12d3-a456-426614174000
+    SearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+      description: Search query
+    PatientGenderParam:
+      name: gender
+      in: query
+      schema:
+        type: string
+        enum:
+          - male
+          - female
+          - other
+      description: Filter by gender
+    PatientTypeParam:
+      name: patient_type
+      in: query
+      schema:
+        type: string
+        enum:
+          - teacher
+          - student
+          - general
+      description: Filter by patient type
   responses:
     BadRequest:
       description: Bad request

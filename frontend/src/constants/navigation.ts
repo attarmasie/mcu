@@ -7,7 +7,7 @@ import {
 } from "@/generated/rbac"
 import {
   Users,
-  ShoppingCart,
+  Accessibility,
   Settings,
   BarChart,
   Package,
@@ -60,24 +60,10 @@ export const NAVIGATION: NavigationItem[] = [
     ],
   },
   {
-    title: "Products",
-    url: "/products",
-    icon: ShoppingCart,
-    checkPath: "/products",
-    items: [
-      {
-        title: "All Products",
-        url: "/products",
-        checkPath: "/products",
-        checkMethod: "GET",
-      },
-      {
-        title: "Create Product",
-        url: "/products/create",
-        checkPath: "/products",
-        checkMethod: "POST",
-      },
-    ],
+    title: "Patients",
+    url: "/patients",
+    icon: Accessibility,
+    checkPath: "/patients",
   },
   {
     title: "Orders",
