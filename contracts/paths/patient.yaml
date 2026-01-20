@@ -1,10 +1,10 @@
-products:
+patients:
   get:
-    operationId: listProducts
-    summary: Get all products
-    description: Retrieve a paginated list of products
+    operationId: listPatients
+    summary: Get all patients
+    description: Retrieve a paginated list of patients
     tags:
-      - products
+      - patients
     security:
       - BearerAuth: []
     parameters:
@@ -21,7 +21,7 @@ products:
                 data:
                   type: array
                   items:
-                    $ref: '../schemas/product.yaml#/Product'
+                    $ref: '../schemas/patient.yaml#/Patient'
                 meta:
                   $ref: '../schemas/common.yaml#/Meta'
       '400':
@@ -30,11 +30,11 @@ products:
         $ref: '../components/responses.yaml#/Unauthorized'
   
   post:
-    operationId: createProduct
-    summary: Create new product
-    description: Create a new product
+    operationId: createPatient
+    summary: Create new patient
+    description: Create a new patient
     tags:
-      - products
+      - patients
     security:
       - BearerAuth: []
     requestBody:
@@ -42,29 +42,29 @@ products:
       content:
         application/json:
           schema:
-            $ref: '../schemas/product.yaml#/CreateProductRequest'
+            $ref: '../schemas/patient.yaml#/CreatePatientRequest'
     responses:
       '201':
-        description: Product created
+        description: Patient created
         content:
           application/json:
             schema:
               type: object
               properties:
                 data:
-                  $ref: '../schemas/product.yaml#/Product'
+                  $ref: '../schemas/patient.yaml#/Patient'
       '400':
         $ref: '../components/responses.yaml#/BadRequest'
       '401':
         $ref: '../components/responses.yaml#/Unauthorized'
 
-products_by_id:
+patients_by_id:
   get:
-    operationId: getProduct
-    summary: Get product by ID
-    description: Retrieve a specific product by UUID
+    operationId: getPatient
+    summary: Get patient by ID
+    description: Retrieve a specific patient by UUID
     tags:
-      - products
+      - patients
     security:
       - BearerAuth: []
     parameters:
@@ -78,18 +78,18 @@ products_by_id:
               type: object
               properties:
                 data:
-                  $ref: '../schemas/product.yaml#/Product'
+                  $ref: '../schemas/patient.yaml#/Patient'
       '404':
         $ref: '../components/responses.yaml#/NotFound'
       '401':
         $ref: '../components/responses.yaml#/Unauthorized'
   
   put:
-    operationId: updateProduct
-    summary: Update product
-    description: Update an existing product
+    operationId: updatePatient
+    summary: Update patient
+    description: Update an existing patient
     tags:
-      - products
+      - patients
     security:
       - BearerAuth: []
     parameters:
@@ -99,35 +99,35 @@ products_by_id:
       content:
         application/json:
           schema:
-            $ref: '../schemas/product.yaml#/CreateProductRequest'
+            $ref: '../schemas/patient.yaml#/CreatePatientRequest'
     responses:
       '200':
-        description: Product updated
+        description: Patient updated
         content:
           application/json:
             schema:
               type: object
               properties:
                 data:
-                  $ref: '../schemas/product.yaml#/Product'
+                  $ref: '../schemas/patient.yaml#/Patient'
       '404':
         $ref: '../components/responses.yaml#/NotFound'
       '401':
         $ref: '../components/responses.yaml#/Unauthorized'
   
   delete:
-    operationId: deleteProduct
-    summary: Delete product
-    description: Delete a product
+    operationId: deletePatient
+    summary: Delete patient
+    description: Delete a patient
     tags:
-      - products
+      - patients
     security:
       - BearerAuth: []
     parameters:
       - $ref: '../components/parameters.yaml#/IdParam'
     responses:
       '204':
-        description: Product deleted
+        description: Patient deleted
       '404':
         $ref: '../components/responses.yaml#/NotFound'
       '401':

@@ -1,0 +1,146 @@
+# contracts/schemas/patient.yaml
+Patient:
+  type: object
+  required:
+    - id
+    - full_name
+    - date_of_birth
+    - gender
+    - patient_type
+    - phone_number
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+      description: Patient UUID
+    full_name:
+      type: string
+      example: "John Doe"
+      minLength: 2
+      maxLength: 255
+      description: Patient full name
+    date_of_birth:
+      type: string
+      format: date
+      example: "1990-01-15"
+      description: Patient date of birth
+    gender:
+      type: string
+      enum: [male, female, other]
+      example: "male"
+      description: Patient gender
+    patient_type:
+      type: string
+      enum: [teacher, student, general]
+      example: "general"
+      description: Patient type (teacher, student, or general)
+    phone_number:
+      type: string
+      example: "+62812345678"
+      description: Patient phone number
+    email:
+      type: string
+      format: email
+      nullable: true
+      example: "patient@example.com"
+      description: Patient email address
+    address:
+      type: string
+      nullable: true
+      example: "Jl. Contoh No. 123, Jakarta"
+      description: Patient address
+    medical_record_number:
+      type: string
+      nullable: true
+      example: "MR-2024-001"
+      description: Medical record number
+    emergency_contact_name:
+      type: string
+      nullable: true
+      example: "Jane Doe"
+      description: Emergency contact name
+    emergency_contact_phone:
+      type: string
+      nullable: true
+      example: "+62812345679"
+      description: Emergency contact phone
+    blood_type:
+      type: string
+      nullable: true
+      enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
+      example: "O+"
+      description: Patient blood type
+    allergies:
+      type: string
+      nullable: true
+      example: "Penicillin, Peanuts"
+      description: Known allergies
+    created_at:
+      type: string
+      format: date-time
+      description: Creation timestamp
+    updated_at:
+      type: string
+      format: date-time
+      description: Last update timestamp
+
+CreatePatientRequest:
+  type: object
+  required:
+    - full_name
+    - date_of_birth
+    - gender
+    - patient_type
+    - phone_number
+  properties:
+    full_name:
+      type: string
+      minLength: 2
+      maxLength: 255
+      example: "John Doe"
+    date_of_birth:
+      type: string
+      format: date
+      example: "1990-01-15"
+    gender:
+      type: string
+      enum: [male, female, other]
+      example: "male"
+    patient_type:
+      type: string
+      enum: [teacher, student, general]
+      example: "general"
+    phone_number:
+      type: string
+      example: "+62812345678"
+    email:
+      type: string
+      format: email
+      nullable: true
+      example: "patient@example.com"
+    address:
+      type: string
+      nullable: true
+      example: "Jl. Contoh No. 123, Jakarta"
+    medical_record_number:
+      type: string
+      nullable: true
+      example: "MR-2024-001"
+    emergency_contact_name:
+      type: string
+      nullable: true
+      example: "Jane Doe"
+    emergency_contact_phone:
+      type: string
+      nullable: true
+      example: "+62812345679"
+    blood_type:
+      type: string
+      nullable: true
+      enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
+      example: "O+"
+    allergies:
+      type: string
+      nullable: true
+      example: "Penicillin, Peanuts"

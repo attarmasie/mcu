@@ -16,8 +16,8 @@ tags:
     description: Authentication endpoints
   - name: users
     description: User management
-  - name: products
-    description: Product management
+  - name: patients
+    description: Patient management
 paths:
   /auth/register:
     post:
@@ -49,7 +49,7 @@ paths:
                   id: 123e4567-e89b-12d3-a456-426614174000
                   name: John Doe
                   email: john@example.com
-                  role: user
+                  role: admin
                   is_active: true
         '400':
           $ref: '#/components/responses/BadRequest'
@@ -84,7 +84,7 @@ paths:
                   id: 123e4567-e89b-12d3-a456-426614174000
                   name: John Doe
                   email: john@example.com
-                  role: user
+                  role: admin
                   is_active: true
         '401':
           $ref: '#/components/responses/Unauthorized'
@@ -97,8 +97,9 @@ paths:
         - auth
       security:
         - BearerAuth:
-            - user
+            - doctor
             - admin
+            - operator
       responses:
         '200':
           description: Current user information
@@ -109,7 +110,7 @@ paths:
               example:
                 user_id: 123e4567-e89b-12d3-a456-426614174000
                 email: john@example.com
-                role: user
+                role: admin
         '401':
           $ref: '#/components/responses/Unauthorized'
   /users:
@@ -247,13 +248,13 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-  /products:
+  /patients:
     get:
-      operationId: listProducts
-      summary: Get all products
-      description: Retrieve a paginated list of products
+      operationId: listPatients
+      summary: Get all patients
+      description: Retrieve a paginated list of patients
       tags:
-        - products
+        - patients
       security:
         - BearerAuth: []
       parameters:
@@ -270,7 +271,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Product'
+                      $ref: '#/components/schemas/Patient'
                   meta:
                     $ref: '#/components/schemas/Meta'
         '400':
@@ -278,11 +279,11 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
     post:
-      operationId: createProduct
-      summary: Create new product
-      description: Create a new product
+      operationId: createPatient
+      summary: Create new patient
+      description: Create a new patient
       tags:
-        - products
+        - patients
       security:
         - BearerAuth: []
       requestBody:
@@ -290,28 +291,28 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProductRequest'
+              $ref: '#/components/schemas/CreatePatientRequest'
       responses:
         '201':
-          description: Product created
+          description: Patient created
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Product'
+                    $ref: '#/components/schemas/Patient'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-  '/products/{id}':
+  '/patients/{id}':
     get:
-      operationId: getProduct
-      summary: Get product by ID
-      description: Retrieve a specific product by UUID
+      operationId: getPatient
+      summary: Get patient by ID
+      description: Retrieve a specific patient by UUID
       tags:
-        - products
+        - patients
       security:
         - BearerAuth: []
       parameters:
@@ -325,17 +326,17 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Product'
+                    $ref: '#/components/schemas/Patient'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      operationId: updateProduct
-      summary: Update product
-      description: Update an existing product
+      operationId: updatePatient
+      summary: Update patient
+      description: Update an existing patient
       tags:
-        - products
+        - patients
       security:
         - BearerAuth: []
       parameters:
@@ -345,34 +346,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateProductRequest'
+              $ref: '#/components/schemas/CreatePatientRequest'
       responses:
         '200':
-          description: Product updated
+          description: Patient updated
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Product'
+                    $ref: '#/components/schemas/Patient'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      operationId: deleteProduct
-      summary: Delete product
-      description: Delete a product
+      operationId: deletePatient
+      summary: Delete patient
+      description: Delete a patient
       tags:
-        - products
+        - patients
       security:
         - BearerAuth: []
       parameters:
         - $ref: '#/components/parameters/IdParam'
       responses:
         '204':
-          description: Product deleted
+          description: Patient deleted
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -584,9 +585,9 @@ components:
           type: string
           enum:
             - admin
-            - user
-            - guest
-          example: user
+            - doctor
+            - operator
+          example: admin
           description: User role
         is_active:
           type: boolean
@@ -607,7 +608,7 @@ components:
           description: Current user email
         role:
           type: string
-          example: user
+          example: admin
           description: Current user role
     User:
       type: object
@@ -636,9 +637,9 @@ components:
           type: string
           enum:
             - admin
-            - user
-            - guest
-          default: user
+            - doctor
+            - operator
+          default: doctor
           description: User role
         is_active:
           type: boolean
@@ -678,9 +679,9 @@ components:
           type: string
           enum:
             - admin
-            - user
-            - guest
-          default: user
+            - doctor
+            - operator
+          default: doctor
     UpdateUserRequest:
       type: object
       properties:
@@ -700,48 +701,101 @@ components:
           type: string
           enum:
             - admin
-            - user
-            - guest
+            - doctor
+            - operator
         is_active:
           type: boolean
-    Product:
+    Patient:
       type: object
       required:
         - id
-        - name
-        - price
-        - stock
+        - full_name
+        - date_of_birth
+        - gender
+        - patient_type
+        - phone_number
       properties:
         id:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
-          description: Product UUID
-        name:
+          description: Patient UUID
+        full_name:
           type: string
-          example: Product Name
+          example: John Doe
           minLength: 2
           maxLength: 255
-          description: Product name
-        description:
+          description: Patient full name
+        date_of_birth:
+          type: string
+          format: date
+          example: '1990-01-15'
+          description: Patient date of birth
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+            - other
+          example: male
+          description: Patient gender
+        patient_type:
+          type: string
+          enum:
+            - teacher
+            - student
+            - general
+          example: general
+          description: 'Patient type (teacher, student, or general)'
+        phone_number:
+          type: string
+          example: '+62812345678'
+          description: Patient phone number
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: patient@example.com
+          description: Patient email address
+        address:
           type: string
           nullable: true
-          example: Product description
-          description: Product description
-        price:
-          type: number
-          format: double
-          example: 99.99
-          description: Product price
-        stock:
-          type: integer
-          example: 100
-          description: Stock quantity
-        category:
+          example: 'Jl. Contoh No. 123, Jakarta'
+          description: Patient address
+        medical_record_number:
           type: string
           nullable: true
-          example: Electronics
-          description: Product category
+          example: MR-2024-001
+          description: Medical record number
+        emergency_contact_name:
+          type: string
+          nullable: true
+          example: Jane Doe
+          description: Emergency contact name
+        emergency_contact_phone:
+          type: string
+          nullable: true
+          example: '+62812345679'
+          description: Emergency contact phone
+        blood_type:
+          type: string
+          nullable: true
+          enum:
+            - A+
+            - A-
+            - B+
+            - B-
+            - AB+
+            - AB-
+            - O+
+            - O-
+          example: O+
+          description: Patient blood type
+        allergies:
+          type: string
+          nullable: true
+          example: 'Penicillin, Peanuts'
+          description: Known allergies
         created_at:
           type: string
           format: date-time
@@ -750,33 +804,79 @@ components:
           type: string
           format: date-time
           description: Last update timestamp
-    CreateProductRequest:
+    CreatePatientRequest:
       type: object
       required:
-        - name
-        - price
-        - stock
+        - full_name
+        - date_of_birth
+        - gender
+        - patient_type
+        - phone_number
       properties:
-        name:
+        full_name:
           type: string
           minLength: 2
           maxLength: 255
-          example: Product Name
-        description:
+          example: John Doe
+        date_of_birth:
+          type: string
+          format: date
+          example: '1990-01-15'
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+            - other
+          example: male
+        patient_type:
+          type: string
+          enum:
+            - teacher
+            - student
+            - general
+          example: general
+        phone_number:
+          type: string
+          example: '+62812345678'
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: patient@example.com
+        address:
           type: string
           nullable: true
-          example: Product description
-        price:
-          type: number
-          format: double
-          example: 99.99
-        stock:
-          type: integer
-          example: 100
-        category:
+          example: 'Jl. Contoh No. 123, Jakarta'
+        medical_record_number:
           type: string
           nullable: true
-          example: Electronics
+          example: MR-2024-001
+        emergency_contact_name:
+          type: string
+          nullable: true
+          example: Jane Doe
+        emergency_contact_phone:
+          type: string
+          nullable: true
+          example: '+62812345679'
+        blood_type:
+          type: string
+          nullable: true
+          enum:
+            - A+
+            - A-
+            - B+
+            - B-
+            - AB+
+            - AB-
+            - O+
+            - O-
+          example: O+
+        allergies:
+          type: string
+          nullable: true
+          example: 'Penicillin, Peanuts'
   securitySchemes:
     BearerAuth:
       type: http

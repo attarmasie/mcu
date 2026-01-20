@@ -23,8 +23,8 @@ User:
       description: User's email address
     role:
       type: string
-      enum: [admin, user, guest]
-      default: user
+      enum: [admin, doctor, operator]
+      default: doctor
       description: User role
     is_active:
       type: boolean
@@ -63,8 +63,8 @@ CreateUserRequest:
       description: User password (will be hashed)
     role:
       type: string
-      enum: [admin, user, guest]
-      default: user
+      enum: [admin, doctor, operator]
+      default: doctor
 
 UpdateUserRequest:
   type: object
@@ -83,6 +83,6 @@ UpdateUserRequest:
       description: New password (optional, will be hashed)
     role:
       type: string
-      enum: [admin, user, guest]
+      enum: [admin, doctor, operator]
     is_active:
       type: boolean

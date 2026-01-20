@@ -78,8 +78,8 @@ UserData:
       description: User's email address
     role:
       type: string
-      enum: [admin, user, guest]
-      example: "user"
+      enum: [admin, doctor, operator]
+      example: "admin"
       description: User role
     is_active:
       type: boolean
@@ -101,5 +101,5 @@ MeResponse:
       description: Current user email
     role:
       type: string
-      example: "user"
+      example: "admin"
       description: Current user role

@@ -29,7 +29,7 @@ auth_register:
                 id: "123e4567-e89b-12d3-a456-426614174000"
                 name: "John Doe"
                 email: "john@example.com"
-                role: "user"
+                role: "admin"
                 is_active: true
       '400':
         $ref: '../components/responses.yaml#/BadRequest'
@@ -65,7 +65,7 @@ auth_login:
                 id: "123e4567-e89b-12d3-a456-426614174000"
                 name: "John Doe"
                 email: "john@example.com"
-                role: "user"
+                role: "admin"
                 is_active: true
       '401':
         $ref: '../components/responses.yaml#/Unauthorized'
@@ -78,7 +78,7 @@ auth_me:
     tags:
       - auth
     security:
-      - BearerAuth: [user, admin]
+      - BearerAuth: [doctor, admin, operator]
     responses:
       '200':
         description: Current user information
@@ -89,6 +89,6 @@ auth_me:
             example:
               user_id: "123e4567-e89b-12d3-a456-426614174000"
               email: "john@example.com"
-              role: "user"
+              role: "admin"
       '401':
         $ref: '../components/responses.yaml#/Unauthorized'

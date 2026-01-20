@@ -19,8 +19,8 @@ tags:
     description: Authentication endpoints
   - name: users
     description: User management
-  - name: products
-    description: Product management
+  - name: patients
+    description: Patient management
 
 paths:
   /auth/register:
@@ -38,11 +38,11 @@ paths:
   /users/{id}:
     $ref: './paths/users.yaml#/users_by_id'
 
-  /products:
-    $ref: './paths/products.yaml#/products'
+  /patients:
+    $ref: './paths/patient.yaml#/patients'
   
-  /products/{id}:
-    $ref: './paths/products.yaml#/products_by_id'
+  /patients/{id}:
+    $ref: './paths/patient.yaml#/patients_by_id'
 
 components:
   parameters:
@@ -95,11 +95,11 @@ components:
     UpdateUserRequest:
       $ref: './schemas/user.yaml#/UpdateUserRequest'
 
-    # Product
-    Product:
-      $ref: './schemas/product.yaml#/Product'
-    CreateProductRequest:
-      $ref: './schemas/product.yaml#/CreateProductRequest'
+    # Patient
+    Patient:
+      $ref: './schemas/patient.yaml#/Patient'
+    CreatePatientRequest:
+      $ref: './schemas/patient.yaml#/CreatePatientRequest'
 
   securitySchemes:
     BearerAuth:
