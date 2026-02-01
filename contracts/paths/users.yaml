@@ -8,10 +8,10 @@ users:
     security:
       - BearerAuth: [admin]
     parameters:
-      - $ref: '../parameters/common.yaml#/PageParam'
-      - $ref: '../parameters/common.yaml#/PerPageParam'
+      - $ref: "../parameters/common.yaml#/PageParam"
+      - $ref: "../parameters/common.yaml#/PerPageParam"
     responses:
-      '200':
+      "200":
         description: Success
         content:
           application/json:
@@ -21,14 +21,14 @@ users:
                 data:
                   type: array
                   items:
-                    $ref: '../schemas/user.yaml#/User'
+                    $ref: "../schemas/user.yaml#/User"
                 meta:
-                  $ref: '../schemas/common.yaml#/Meta'
-      '400':
-        $ref: '../components/responses.yaml#/BadRequest'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
-  
+                  $ref: "../schemas/common.yaml#/Meta"
+      "400":
+        $ref: "../components/responses.yaml#/BadRequest"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+
   post:
     operationId: createUser
     summary: Create new user
@@ -42,9 +42,9 @@ users:
       content:
         application/json:
           schema:
-            $ref: '../schemas/user.yaml#/CreateUserRequest'
+            $ref: "../schemas/user.yaml#/CreateUserRequest"
     responses:
-      '201':
+      "201":
         description: User created
         content:
           application/json:
@@ -52,11 +52,11 @@ users:
               type: object
               properties:
                 data:
-                  $ref: '../schemas/user.yaml#/User'
-      '400':
-        $ref: '../components/responses.yaml#/BadRequest'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
+                  $ref: "../schemas/user.yaml#/User"
+      "400":
+        $ref: "../components/responses.yaml#/BadRequest"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
 
 users_by_id:
   get:
@@ -68,9 +68,9 @@ users_by_id:
     security:
       - BearerAuth: [admin]
     parameters:
-      - $ref: '../parameters/common.yaml#/IdParam'
+      - $ref: "../parameters/common.yaml#/IdParam"
     responses:
-      '200':
+      "200":
         description: Success
         content:
           application/json:
@@ -78,12 +78,12 @@ users_by_id:
               type: object
               properties:
                 data:
-                  $ref: '../schemas/user.yaml#/User'
-      '404':
-        $ref: '../components/responses.yaml#/NotFound'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
-  
+                  $ref: "../schemas/user.yaml#/User"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+
   put:
     operationId: updateUser
     summary: Update user
@@ -93,15 +93,15 @@ users_by_id:
     security:
       - BearerAuth: [admin]
     parameters:
-      - $ref: '../parameters/common.yaml#/IdParam'
+      - $ref: "../parameters/common.yaml#/IdParam"
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '../schemas/user.yaml#/UpdateUserRequest'
+            $ref: "../schemas/user.yaml#/UpdateUserRequest"
     responses:
-      '200':
+      "200":
         description: User updated
         content:
           application/json:
@@ -109,12 +109,12 @@ users_by_id:
               type: object
               properties:
                 data:
-                  $ref: '../schemas/user.yaml#/User'
-      '404':
-        $ref: '../components/responses.yaml#/NotFound'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
-  
+                  $ref: "../schemas/user.yaml#/User"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+
   delete:
     operationId: deleteUser
     summary: Delete user
@@ -124,11 +124,11 @@ users_by_id:
     security:
       - BearerAuth: [admin]
     parameters:
-      - $ref: '../parameters/common.yaml#/IdParam'
+      - $ref: "../parameters/common.yaml#/IdParam"
     responses:
-      '204':
+      "204":
         description: User deleted
-      '404':
-        $ref: '../components/responses.yaml#/NotFound'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"

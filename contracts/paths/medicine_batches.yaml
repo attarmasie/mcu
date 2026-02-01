@@ -1,18 +1,21 @@
-patients:
+medicine_batches:
   get:
-    operationId: listPatients
-    summary: Get all patients
-    description: Retrieve a paginated list of patients
+    operationId: listMedicineBatches
+    summary: Get medicine batches
+    description: Retrieve a paginated list of medicine batches
     tags:
-      - patients
+      - medicine_batches
     security:
-      - BearerAuth: [admin]
+      - BearerAuth: [admin, doctor]
     parameters:
       - $ref: "../parameters/common.yaml#/PageParam"
       - $ref: "../parameters/common.yaml#/PerPageParam"
-      - $ref: "../parameters/common.yaml#/SearchParam"
-      - $ref: "../parameters/patient.yaml#/PatientGenderParam"
-      - $ref: "../parameters/patient.yaml#/PatientTypeParam"
+      - $ref: "../parameters/medicine_batch.yaml#/MedicineIdParam"
+      - $ref: "../parameters/medicine_batch.yaml#/MedicineBatchSearchParam"
+      - $ref: "../parameters/medicine_batch.yaml#/ExpiredParam"
+      - $ref: "../parameters/medicine_batch.yaml#/BatchStatusParam"
+      - $ref: "../parameters/medicine_batch.yaml#/ExpirationDateFromParam"
+      - $ref: "../parameters/medicine_batch.yaml#/ExpirationDateToParam"
     responses:
       "200":
         description: Success
@@ -24,7 +27,7 @@ patients:
                 data:
                   type: array
                   items:
-                    $ref: "../schemas/patient.yaml#/Patient"
+                    $ref: "../schemas/medicine_batch.yaml#/MedicineBatch"
                 meta:
                   $ref: "../schemas/common.yaml#/Meta"
       "400":
@@ -33,43 +36,43 @@ patients:
         $ref: "../components/responses.yaml#/Unauthorized"
 
   post:
-    operationId: createPatient
-    summary: Create new patient
-    description: Create a new patient
+    operationId: createMedicineBatch
+    summary: Create medicine batch
+    description: Create a new medicine batch
     tags:
-      - patients
+      - medicine_batches
     security:
-      - BearerAuth: [admin]
+      - BearerAuth: [admin, doctor]
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: "../schemas/patient.yaml#/CreatePatientRequest"
+            $ref: "../schemas/medicine_batch.yaml#/CreateMedicineBatchRequest"
     responses:
       "201":
-        description: Patient created
+        description: Medicine batch created
         content:
           application/json:
             schema:
               type: object
               properties:
                 data:
-                  $ref: "../schemas/patient.yaml#/Patient"
+                  $ref: "../schemas/medicine_batch.yaml#/MedicineBatch"
       "400":
         $ref: "../components/responses.yaml#/BadRequest"
       "401":
         $ref: "../components/responses.yaml#/Unauthorized"
 
-patients_by_id:
+medicine_batches_by_id:
   get:
-    operationId: getPatient
-    summary: Get patient by ID
-    description: Retrieve a specific patient by UUID
+    operationId: getMedicineBatch
+    summary: Get medicine batch by ID
+    description: Retrieve a specific medicine batch by UUID
     tags:
-      - patients
+      - medicine_batches
     security:
-      - BearerAuth: [admin]
+      - BearerAuth: [admin, doctor]
     parameters:
       - $ref: "../parameters/common.yaml#/IdParam"
     responses:
@@ -81,20 +84,20 @@ patients_by_id:
               type: object
               properties:
                 data:
-                  $ref: "../schemas/patient.yaml#/Patient"
+                  $ref: "../schemas/medicine_batch.yaml#/MedicineBatch"
       "404":
         $ref: "../components/responses.yaml#/NotFound"
       "401":
         $ref: "../components/responses.yaml#/Unauthorized"
 
   put:
-    operationId: updatePatient
-    summary: Update patient
-    description: Update an existing patient
+    operationId: updateMedicineBatch
+    summary: Update medicine batch
+    description: Update an existing medicine batch
     tags:
-      - patients
+      - medicine_batches
     security:
-      - BearerAuth: [admin]
+      - BearerAuth: [admin, doctor]
     parameters:
       - $ref: "../parameters/common.yaml#/IdParam"
     requestBody:
@@ -102,35 +105,35 @@ patients_by_id:
       content:
         application/json:
           schema:
-            $ref: "../schemas/patient.yaml#/UpdatePatientRequest"
+            $ref: "../schemas/medicine_batch.yaml#/UpdateMedicineBatchRequest"
     responses:
       "200":
-        description: Patient updated
+        description: Medicine batch updated
         content:
           application/json:
             schema:
               type: object
               properties:
                 data:
-                  $ref: "../schemas/patient.yaml#/Patient"
+                  $ref: "../schemas/medicine_batch.yaml#/MedicineBatch"
       "404":
         $ref: "../components/responses.yaml#/NotFound"
       "401":
         $ref: "../components/responses.yaml#/Unauthorized"
 
   delete:
-    operationId: deletePatient
-    summary: Delete patient
-    description: Delete a patient
+    operationId: deleteMedicineBatch
+    summary: Delete medicine batch
+    description: Delete a medicine batch
     tags:
-      - patients
+      - medicine_batches
     security:
-      - BearerAuth: [admin]
+      - BearerAuth: [admin, doctor]
     parameters:
       - $ref: "../parameters/common.yaml#/IdParam"
     responses:
       "204":
-        description: Patient deleted
+        description: Medicine batch deleted
       "404":
         $ref: "../components/responses.yaml#/NotFound"
       "401":

@@ -18,6 +18,10 @@ tags:
     description: User management
   - name: patients
     description: Patient management
+  - name: medicines
+    description: Medicine master data management
+  - name: medicine_batches
+    description: Medicine batch and inventory management
 paths:
   /auth/register:
     post:
@@ -386,6 +390,296 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+  /medicines:
+    get:
+      operationId: listMedicines
+      summary: Get all medicines
+      description: Retrieve a paginated list of medicines
+      tags:
+        - medicines
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - $ref: '#/components/parameters/MedicineSearchParam'
+        - $ref: '#/components/parameters/MedicineStatusParam'
+        - $ref: '#/components/parameters/MedicineDosageFormParam'
+        - $ref: '#/components/parameters/PrescriptionRequiredParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Medicine'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createMedicine
+      summary: Create new medicine
+      description: Create a new medicine
+      tags:
+        - medicines
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMedicineRequest'
+      responses:
+        '201':
+          description: Medicine created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Medicine'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  '/medicines/{id}':
+    get:
+      operationId: getMedicine
+      summary: Get medicine by ID
+      description: Retrieve a specific medicine by UUID
+      tags:
+        - medicines
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Medicine'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateMedicine
+      summary: Update medicine
+      description: Update an existing medicine
+      tags:
+        - medicines
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMedicineRequest'
+      responses:
+        '200':
+          description: Medicine updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Medicine'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteMedicine
+      summary: Delete medicine
+      description: Delete a medicine
+      tags:
+        - medicines
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Medicine deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /medicine-batches:
+    get:
+      operationId: listMedicineBatches
+      summary: Get medicine batches
+      description: Retrieve a paginated list of medicine batches
+      tags:
+        - medicine_batches
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - $ref: '#/components/parameters/MedicineIdParam'
+        - $ref: '#/components/parameters/MedicineBatchSearchParam'
+        - $ref: '#/components/parameters/ExpiredParam'
+        - $ref: '#/components/parameters/BatchStatusParam'
+        - $ref: '#/components/parameters/ExpirationDateFromParam'
+        - $ref: '#/components/parameters/ExpirationDateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MedicineBatch'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createMedicineBatch
+      summary: Create medicine batch
+      description: Create a new medicine batch
+      tags:
+        - medicine_batches
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMedicineBatchRequest'
+      responses:
+        '201':
+          description: Medicine batch created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MedicineBatch'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  '/medicine-batches/{id}':
+    get:
+      operationId: getMedicineBatch
+      summary: Get medicine batch by ID
+      description: Retrieve a specific medicine batch by UUID
+      tags:
+        - medicine_batches
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MedicineBatch'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updateMedicineBatch
+      summary: Update medicine batch
+      description: Update an existing medicine batch
+      tags:
+        - medicine_batches
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMedicineBatchRequest'
+      responses:
+        '200':
+          description: Medicine batch updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/MedicineBatch'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteMedicineBatch
+      summary: Delete medicine batch
+      description: Delete a medicine batch
+      tags:
+        - medicine_batches
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Medicine batch deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   parameters:
     PageParam:
@@ -440,6 +734,84 @@ components:
           - student
           - general
       description: Filter by patient type
+    MedicineSearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+      description: |
+        Search medicines by name, code, or strength (partial match, case-insensitive)
+    MedicineStatusParam:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum:
+          - active
+          - inactive
+      description: Filter medicines by status
+    MedicineDosageFormParam:
+      name: dosage_form
+      in: query
+      schema:
+        type: string
+        enum:
+          - tablet
+          - capsule
+          - syrup
+          - injection
+          - cream
+      description: Filter medicines by dosage form
+    PrescriptionRequiredParam:
+      name: is_prescription_required
+      in: query
+      schema:
+        type: boolean
+      description: Filter medicines that require prescription
+    MedicineIdParam:
+      name: medicine_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter batches by medicine UUID
+    MedicineBatchSearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+      description: |
+        Search medicine batches by batch number (partial match, case-insensitive)
+    BatchStatusParam:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum:
+          - active
+          - inactive
+      description: Filter medicine batches by status
+    ExpiredParam:
+      name: is_expired
+      in: query
+      schema:
+        type: boolean
+      description: |
+        Filter expired batches. true = expired batches only, false = non-expired batches only
+    ExpirationDateFromParam:
+      name: expiration_date_from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter batches with expiration date from (>=)
+    ExpirationDateToParam:
+      name: expiration_date_to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter batches with expiration date to (<=)
   responses:
     BadRequest:
       description: Bad request
@@ -911,6 +1283,202 @@ components:
           type: string
           nullable: true
           example: 'Penicillin, Peanuts'
+    Medicine:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - strength
+        - dosage_form
+        - is_prescription_required
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          description: Medicine UUID
+        code:
+          type: string
+          example: PARA-500-TAB
+          description: Internal medicine code
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Paracetamol
+          description: Medicine name
+        strength:
+          type: string
+          example: 500 mg
+          description: Medicine strength
+        dosage_form:
+          type: string
+          enum:
+            - tablet
+            - capsule
+            - syrup
+            - injection
+            - cream
+          example: tablet
+          description: Dosage form
+        is_prescription_required:
+          type: boolean
+          example: false
+          description: Whether prescription is required
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          example: active
+          description: Medicine status
+        notes:
+          type: string
+          nullable: true
+          example: Pain reliever and fever reducer
+          description: Additional notes
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+    CreateMedicineRequest:
+      type: object
+      required:
+        - code
+        - name
+        - strength
+        - dosage_form
+        - is_prescription_required
+      properties:
+        code:
+          type: string
+          example: PARA-500-TAB
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Paracetamol
+        strength:
+          type: string
+          example: 500 mg
+        dosage_form:
+          type: string
+          enum:
+            - tablet
+            - capsule
+            - syrup
+            - injection
+            - cream
+          example: tablet
+        is_prescription_required:
+          type: boolean
+          example: false
+        notes:
+          type: string
+          nullable: true
+          example: Pain reliever and fever reducer
+    MedicineBatch:
+      type: object
+      required:
+        - id
+        - medicine_id
+        - batch_number
+        - expiration_date
+        - stock
+        - unit
+        - minimum_stock
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 223e4567-e89b-12d3-a456-426614174111
+          description: Medicine batch UUID
+        medicine_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          description: Related medicine UUID
+        batch_number:
+          type: string
+          example: BATCH-A-2024
+          description: Production batch number
+        expiration_date:
+          type: string
+          format: date
+          example: '2026-02-01'
+          description: Expiration date
+        stock:
+          type: integer
+          minimum: 0
+          example: 50
+          description: Available stock for this batch
+        unit:
+          type: string
+          example: tablet
+          description: Stock unit
+        minimum_stock:
+          type: integer
+          minimum: 0
+          example: 10
+          description: Minimum stock threshold
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          example: active
+          description: Batch status
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+    CreateMedicineBatchRequest:
+      type: object
+      required:
+        - medicine_id
+        - batch_number
+        - expiration_date
+        - stock
+        - unit
+        - minimum_stock
+      properties:
+        medicine_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        batch_number:
+          type: string
+          example: BATCH-A-2024
+        expiration_date:
+          type: string
+          format: date
+          example: '2026-02-01'
+        stock:
+          type: integer
+          minimum: 0
+          example: 50
+        unit:
+          type: string
+          example: tablet
+        minimum_stock:
+          type: integer
+          minimum: 0
+          example: 10
   securitySchemes:
     BearerAuth:
       type: http

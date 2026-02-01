@@ -1,0 +1,127 @@
+Medicine:
+  type: object
+  required:
+    - id
+    - code
+    - name
+    - strength
+    - dosage_form
+    - is_prescription_required
+    - status
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+      description: Medicine UUID
+    code:
+      type: string
+      example: "PARA-500-TAB"
+      description: Internal medicine code
+    name:
+      type: string
+      minLength: 2
+      maxLength: 255
+      example: "Paracetamol"
+      description: Medicine name
+    strength:
+      type: string
+      example: "500 mg"
+      description: Medicine strength
+    dosage_form:
+      type: string
+      enum: [tablet, capsule, syrup, injection, cream]
+      example: "tablet"
+      description: Dosage form
+    is_prescription_required:
+      type: boolean
+      example: false
+      description: Whether prescription is required
+    status:
+      type: string
+      enum: [active, inactive]
+      example: "active"
+      description: Medicine status
+    notes:
+      type: string
+      nullable: true
+      example: "Pain reliever and fever reducer"
+      description: Additional notes
+    created_at:
+      type: string
+      format: date-time
+      description: Creation timestamp
+    updated_at:
+      type: string
+      format: date-time
+      description: Last update timestamp
+
+CreateMedicineRequest:
+  type: object
+  required:
+    - code
+    - name
+    - strength
+    - dosage_form
+    - is_prescription_required
+  properties:
+    code:
+      type: string
+      example: "PARA-500-TAB"
+    name:
+      type: string
+      minLength: 2
+      maxLength: 255
+      example: "Paracetamol"
+    strength:
+      type: string
+      example: "500 mg"
+    dosage_form:
+      type: string
+      enum: [tablet, capsule, syrup, injection, cream]
+      example: "tablet"
+    is_prescription_required:
+      type: boolean
+      example: false
+    notes:
+      type: string
+      nullable: true
+      example: "Pain reliever and fever reducer"
+
+UpdateMedicineRequest:
+  type: object
+  required:
+    - id
+    - code
+    - name
+    - strength
+    - dosage_form
+    - is_prescription_required
+  properties:
+    id:
+      type: string
+      example: "1234567890"
+    code:
+      type: string
+      example: "PARA-500-TAB"
+    name:
+      type: string
+      minLength: 2
+      maxLength: 255
+      example: "Paracetamol"
+    strength:
+      type: string
+      example: "500 mg"
+    dosage_form:
+      type: string
+      enum: [tablet, capsule, syrup, injection, cream]
+      example: "tablet"
+    is_prescription_required:
+      type: boolean
+      example: false
+    notes:
+      type: string
+      nullable: true
+      example: "Pain reliever and fever reducer"

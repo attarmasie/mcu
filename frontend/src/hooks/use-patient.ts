@@ -1,6 +1,8 @@
 import type {
   CreatePatientRequest,
   ListPatientsParams,
+  Patient,
+  Meta,
 } from "@/generated/models";
 import {
   getListPatientsQueryKey,
@@ -12,8 +14,17 @@ import {
 } from "@/generated/patients/patients";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import type {
+  DetailHookResult,
+  ListHookResult,
+  MutationHookResult,
+} from "./common/types";
+import { mapDetailQuery, mapListQuery, mapMutation } from "./common/mappers";
 
-export const usePatientCache = () => {
+export const usePatientCache = (): {
+  queryClient: ReturnType<typeof useQueryClient>;
+  invalidatePatientList: () => Promise<void>;
+} => {
   const queryClient = useQueryClient();
 
   const invalidatePatientList = () =>
@@ -24,32 +35,26 @@ export const usePatientCache = () => {
   return { queryClient, invalidatePatientList };
 };
 
-export const usePatientList = (params?: ListPatientsParams) => {
+export const usePatientList = (
+  params?: ListPatientsParams,
+): ListHookResult<Patient, Meta> => {
   const query = useListPatients(params);
-
-  return {
-    data: query.data?.data ?? [],
-    meta: query.data?.meta,
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
-    refetch: query.refetch,
-  };
+  return mapListQuery<Patient, Meta>(query);
 };
 
-export const usePatientDetail = (id: string) => {
+export const usePatientDetail = (id: string): DetailHookResult<Patient> => {
   const query = useGetPatient(id);
-
-  return {
-    data: query.data?.data,
-    isLoading: query.isLoading,
-    isError: query.isError,
-    error: query.error,
-    refetch: query.refetch,
-  };
+  return mapDetailQuery<Patient>(query);
 };
 
-export const usePatientCreate = () => {
+export type UsePatientCreateResult = MutationHookResult<{
+  data: CreatePatientRequest;
+}> & {
+  createPatient: (data: CreatePatientRequest) => void;
+  isCreating: boolean;
+};
+
+export const usePatientCreate = (): UsePatientCreateResult => {
   const { invalidatePatientList } = usePatientCache();
 
   const mutation = useCreatePatient({
@@ -64,17 +69,24 @@ export const usePatientCreate = () => {
     },
   });
 
+  const mapped = mapMutation<{ data: CreatePatientRequest }>(mutation);
+
   return {
-    createPatient: (data: CreatePatientRequest) => mutation.mutate({ data }),
-    isCreating: mutation.isPending,
-    isSuccess: mutation.isSuccess,
-    isError: mutation.isError,
-    error: mutation.error,
-    reset: mutation.reset,
+    ...mapped,
+    createPatient: (data) => mapped.mutate({ data }),
+    isCreating: mapped.isPending,
   };
 };
 
-export const usePatientUpdate = () => {
+export type UsePatientUpdateResult = MutationHookResult<{
+  id: string;
+  data: CreatePatientRequest;
+}> & {
+  updatePatient: (id: string, data: CreatePatientRequest) => void;
+  isUpdating: boolean;
+};
+
+export const usePatientUpdate = (): UsePatientUpdateResult => {
   const { invalidatePatientList } = usePatientCache();
 
   const mutation = useUpdatePatient({
@@ -89,18 +101,24 @@ export const usePatientUpdate = () => {
     },
   });
 
+  const mapped = mapMutation<{
+    id: string;
+    data: CreatePatientRequest;
+  }>(mutation);
+
   return {
-    updatePatient: (id: string, data: CreatePatientRequest) =>
-      mutation.mutate({ id, data }),
-    isUpdating: mutation.isPending,
-    isSuccess: mutation.isSuccess,
-    isError: mutation.isError,
-    error: mutation.error,
-    reset: mutation.reset,
+    ...mapped,
+    updatePatient: (id, data) => mapped.mutate({ id, data }),
+    isUpdating: mapped.isPending,
   };
 };
 
-export const usePatientDelete = () => {
+export type UsePatientDeleteResult = MutationHookResult<{ id: string }> & {
+  deletePatient: (id: string) => void;
+  isDeleting: boolean;
+};
+
+export const usePatientDelete = (): UsePatientDeleteResult => {
   const { invalidatePatientList } = usePatientCache();
 
   const mutation = useDeletePatient({
@@ -115,12 +133,11 @@ export const usePatientDelete = () => {
     },
   });
 
+  const mapped = mapMutation<{ id: string }>(mutation);
+
   return {
-    deletePatient: (id: string) => mutation.mutate({ id }),
-    isDeleting: mutation.isPending,
-    isSuccess: mutation.isSuccess,
-    isError: mutation.isError,
-    error: mutation.error,
-    reset: mutation.reset,
+    ...mapped,
+    deletePatient: (id) => mapped.mutate({ id }),
+    isDeleting: mapped.isPending,
   };
 };

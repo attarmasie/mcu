@@ -21,98 +21,155 @@ tags:
     description: User management
   - name: patients
     description: Patient management
+  - name: medicines
+    description: Medicine master data management
+  - name: medicine_batches
+    description: Medicine batch and inventory management
 
 paths:
   /auth/register:
-    $ref: './paths/auth.yaml#/auth_register'
-  
+    $ref: "./paths/auth.yaml#/auth_register"
+
   /auth/login:
-    $ref: './paths/auth.yaml#/auth_login'
-  
+    $ref: "./paths/auth.yaml#/auth_login"
+
   /auth/me:
-    $ref: './paths/auth.yaml#/auth_me'
+    $ref: "./paths/auth.yaml#/auth_me"
 
   /users:
-    $ref: './paths/users.yaml#/users'
-  
+    $ref: "./paths/users.yaml#/users"
+
   /users/{id}:
-    $ref: './paths/users.yaml#/users_by_id'
+    $ref: "./paths/users.yaml#/users_by_id"
 
   /patients:
-    $ref: './paths/patient.yaml#/patients'
-  
+    $ref: "./paths/patient.yaml#/patients"
+
   /patients/{id}:
-    $ref: './paths/patient.yaml#/patients_by_id'
+    $ref: "./paths/patient.yaml#/patients_by_id"
+
+  /medicines:
+    $ref: "./paths/medicines.yaml#/medicines"
+
+  /medicines/{id}:
+    $ref: "./paths/medicines.yaml#/medicines_by_id"
+
+  /medicine-batches:
+    $ref: "./paths/medicine_batches.yaml#/medicine_batches"
+
+  /medicine-batches/{id}:
+    $ref: "./paths/medicine_batches.yaml#/medicine_batches_by_id"
 
 components:
   parameters:
-
     # Common parameters
     PageParam:
-      $ref: './parameters/common.yaml#/PageParam'
+      $ref: "./parameters/common.yaml#/PageParam"
     PerPageParam:
-      $ref: './parameters/common.yaml#/PerPageParam'
+      $ref: "./parameters/common.yaml#/PerPageParam"
     IdParam:
-      $ref: './parameters/common.yaml#/IdParam'
+      $ref: "./parameters/common.yaml#/IdParam"
     SearchParam:
-      $ref: './parameters/common.yaml#/SearchParam'
+      $ref: "./parameters/common.yaml#/SearchParam"
 
     # Patient parameters
     PatientGenderParam:
-      $ref: './parameters/patient.yaml#/PatientGenderParam'
+      $ref: "./parameters/patient.yaml#/PatientGenderParam"
     PatientTypeParam:
-      $ref: './parameters/patient.yaml#/PatientTypeParam'
+      $ref: "./parameters/patient.yaml#/PatientTypeParam"
+
+    # Medicine parameters
+    MedicineSearchParam:
+      $ref: "./parameters/medicine.yaml#/MedicineSearchParam"
+    MedicineStatusParam:
+      $ref: "./parameters/medicine.yaml#/MedicineStatusParam"
+    MedicineDosageFormParam:
+      $ref: "./parameters/medicine.yaml#/MedicineDosageFormParam"
+    PrescriptionRequiredParam:
+      $ref: "./parameters/medicine.yaml#/PrescriptionRequiredParam"
+
+    # Medicine batch parameters
+    MedicineIdParam:
+      $ref: "./parameters/medicine_batch.yaml#/MedicineIdParam"
+    MedicineBatchSearchParam:
+      $ref: "./parameters/medicine_batch.yaml#/MedicineBatchSearchParam"
+    BatchStatusParam:
+      $ref: "./parameters/medicine_batch.yaml#/BatchStatusParam"
+    ExpiredParam:
+      $ref: "./parameters/medicine_batch.yaml#/ExpiredParam"
+    ExpirationDateFromParam:
+      $ref: "./parameters/medicine_batch.yaml#/ExpirationDateFromParam"
+    ExpirationDateToParam:
+      $ref: "./parameters/medicine_batch.yaml#/ExpirationDateToParam"
 
   responses:
     BadRequest:
-      $ref: './components/responses.yaml#/BadRequest'
+      $ref: "./components/responses.yaml#/BadRequest"
     Unauthorized:
-      $ref: './components/responses.yaml#/Unauthorized'
+      $ref: "./components/responses.yaml#/Unauthorized"
     NotFound:
-      $ref: './components/responses.yaml#/NotFound'
+      $ref: "./components/responses.yaml#/NotFound"
     Forbidden:
-      $ref: './components/responses.yaml#/Forbidden'
+      $ref: "./components/responses.yaml#/Forbidden"
     Conflict:
-      $ref: './components/responses.yaml#/Conflict'
+      $ref: "./components/responses.yaml#/Conflict"
     InternalServerError:
-      $ref: './components/responses.yaml#/InternalServerError'
+      $ref: "./components/responses.yaml#/InternalServerError"
 
   schemas:
     Error:
-      $ref: './schemas/common.yaml#/Error'
+      $ref: "./schemas/common.yaml#/Error"
     Meta:
-      $ref: './schemas/common.yaml#/Meta'
+      $ref: "./schemas/common.yaml#/Meta"
     PaginationParams:
-      $ref: './schemas/common.yaml#/PaginationParams'
+      $ref: "./schemas/common.yaml#/PaginationParams"
 
     # Auth
     RegisterRequest:
-      $ref: './schemas/auth.yaml#/RegisterRequest'
+      $ref: "./schemas/auth.yaml#/RegisterRequest"
     LoginRequest:
-      $ref: './schemas/auth.yaml#/LoginRequest'
+      $ref: "./schemas/auth.yaml#/LoginRequest"
     AuthResponse:
-      $ref: './schemas/auth.yaml#/AuthResponse'
+      $ref: "./schemas/auth.yaml#/AuthResponse"
     UserData:
-      $ref: './schemas/auth.yaml#/UserData'
+      $ref: "./schemas/auth.yaml#/UserData"
     MeResponse:
-      $ref: './schemas/auth.yaml#/MeResponse'
+      $ref: "./schemas/auth.yaml#/MeResponse"
 
     # User
     User:
-      $ref: './schemas/user.yaml#/User'
+      $ref: "./schemas/user.yaml#/User"
     CreateUserRequest:
-      $ref: './schemas/user.yaml#/CreateUserRequest'
+      $ref: "./schemas/user.yaml#/CreateUserRequest"
     UpdateUserRequest:
-      $ref: './schemas/user.yaml#/UpdateUserRequest'
+      $ref: "./schemas/user.yaml#/UpdateUserRequest"
 
     # Patient
     Patient:
-      $ref: './schemas/patient.yaml#/Patient'
+      $ref: "./schemas/patient.yaml#/Patient"
     CreatePatientRequest:
-      $ref: './schemas/patient.yaml#/CreatePatientRequest'
+      $ref: "./schemas/patient.yaml#/CreatePatientRequest"
+    UpdatePatientRequest:
+      $ref: "./schemas/patient.yaml#/UpdatePatientRequest"
+
+    # Medicine
+    Medicine:
+      $ref: "./schemas/medicine.yaml#/Medicine"
+    CreateMedicineRequest:
+      $ref: "./schemas/medicine.yaml#/CreateMedicineRequest"
+    UpdateMedicineRequest:
+      $ref: "./schemas/medicine.yaml#/UpdateMedicineRequest"
+
+    # Medicine Batch
+    MedicineBatch:
+      $ref: "./schemas/medicine_batch.yaml#/MedicineBatch"
+    CreateMedicineBatchRequest:
+      $ref: "./schemas/medicine_batch.yaml#/CreateMedicineBatchRequest"
+    UpdateMedicineBatchRequest:
+      $ref: "./schemas/medicine_batch.yaml#/UpdateMedicineBatchRequest"
 
   securitySchemes:
     BearerAuth:
-      $ref: './components/security.yaml#/BearerAuth'
+      $ref: "./components/security.yaml#/BearerAuth"
     ApiKeyAuth:
-      $ref: './components/security.yaml#/ApiKeyAuth'
+      $ref: "./components/security.yaml#/ApiKeyAuth"

@@ -67,6 +67,10 @@ func (a *App) initDatabase() error {
 		return err
 	}
 
+	// drop tables for testing purposes
+	// db.Migrator().DropTable(&models.MedicineBatch{})
+	// db.Migrator().DropTable(&models.Medicine{})
+
 	// Run auto migrations
 	if err := database.AutoMigrate(db); err != nil {
 		return fmt.Errorf("failed to run migrations: %w", err)

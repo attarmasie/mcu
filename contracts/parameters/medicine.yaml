@@ -1,0 +1,31 @@
+MedicineSearchParam:
+  name: search
+  in: query
+  schema:
+    type: string
+  description: >
+    Search medicines by name, code, or strength
+    (partial match, case-insensitive)
+
+MedicineStatusParam:
+  name: status
+  in: query
+  schema:
+    type: string
+    enum: [active, inactive]
+  description: Filter medicines by status
+
+MedicineDosageFormParam:
+  name: dosage_form
+  in: query
+  schema:
+    type: string
+    enum: [tablet, capsule, syrup, injection, cream]
+  description: Filter medicines by dosage form
+
+PrescriptionRequiredParam:
+  name: is_prescription_required
+  in: query
+  schema:
+    type: boolean
+  description: Filter medicines that require prescription

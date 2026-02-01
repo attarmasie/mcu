@@ -10,17 +10,23 @@ type CombinedHandler struct {
 	*UserHandler
 	*PatientHandler
 	*AuthHandler
+	*MedicineHandler
+	*MedicineBatchHandler
 }
 
 func NewCombinedHandler(
 	userService service.UserService,
 	patientService service.PatientService,
 	authService service.AuthService,
+	medicineService service.MedicineService,
+	medicineBatchService service.MedicineBatchService,
 ) *CombinedHandler {
 	return &CombinedHandler{
-		UserHandler:    NewUserHandler(userService),
-		PatientHandler: NewPatientHandler(patientService),
-		AuthHandler:    NewAuthHandler(authService),
+		UserHandler:          NewUserHandler(userService),
+		PatientHandler:       NewPatientHandler(patientService),
+		AuthHandler:          NewAuthHandler(authService),
+		MedicineHandler:      NewMedicineHandler(medicineService),
+		MedicineBatchHandler: NewMedicineBatchHandler(medicineBatchService),
 	}
 }
 

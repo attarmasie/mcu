@@ -56,5 +56,7 @@ func AutoMigrate(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&models.User{},
 		&models.Patient{},
+		&models.Medicine{},
+		&models.MedicineBatch{},
 	)
 }

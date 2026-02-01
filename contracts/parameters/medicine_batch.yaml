@@ -1,0 +1,50 @@
+MedicineBatchSearchParam:
+  name: search
+  in: query
+  schema:
+    type: string
+  description: >
+    Search medicine batches by batch number
+    (partial match, case-insensitive)
+
+MedicineIdParam:
+  name: medicine_id
+  in: query
+  schema:
+    type: string
+    format: uuid
+  description: Filter batches by medicine UUID
+
+BatchStatusParam:
+  name: status
+  in: query
+  schema:
+    type: string
+    enum: [active, inactive]
+  description: Filter medicine batches by status
+
+ExpiredParam:
+  name: is_expired
+  in: query
+  schema:
+    type: boolean
+  description: >
+    Filter expired batches.
+    true = expired batches only,
+    false = non-expired batches only
+
+ExpirationDateFromParam:
+  name: expiration_date_from
+  in: query
+  schema:
+    type: string
+    format: date
+  description: Filter batches with expiration date from (>=)
+
+ExpirationDateToParam:
+  name: expiration_date_to
+  in: query
+  schema:
+    type: string
+    format: date
+  description: Filter batches with expiration date to (<=)
