@@ -62,11 +62,33 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
+	// Determine role, default to "doctor"
+	role := "doctor"
+	if req.Role != nil {
+		role = string(*req.Role)
+	}
+
+	// Reject admin role creation
+	if role == "admin" {
+		c.JSON(http.StatusForbidden, generated.Error{
+			Message: "Cannot create user with admin role",
+		})
+		return
+	}
+
 	user := &models.User{
 		Name:     req.Name,
 		Email:    string(req.Email),
-		Role:     "user",
+		Role:     role,
 		IsActive: true,
+	}
+
+	// Hash password
+	if err := user.HashPassword(req.Password); err != nil {
+		c.JSON(http.StatusInternalServerError, generated.Error{
+			Message: "Failed to hash password",
+		})
+		return
 	}
 
 	if err := h.service.CreateUser(c.Request.Context(), user); err != nil {

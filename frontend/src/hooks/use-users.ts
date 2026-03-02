@@ -21,6 +21,7 @@ import type {
   MutationHookResult,
 } from "./common/types";
 import { mapDetailQuery, mapListQuery, mapMutation } from "./common/mappers";
+import type { PaginationMeta } from "@/components/common/data-table";
 
 export const useUsersCache = (): {
   queryClient: ReturnType<typeof useQueryClient>;
@@ -39,9 +40,9 @@ export const useUsersCache = (): {
 
 export const useUsersList = (
   params?: ListUsersParams,
-): ListHookResult<User, unknown> => {
+): ListHookResult<User, PaginationMeta> => {
   const query = useListUsers(params);
-  return mapListQuery<User, unknown>(query);
+  return mapListQuery<User, PaginationMeta>(query);
 };
 
 export const useUserDetail = (id: string): DetailHookResult<User> => {
@@ -89,6 +90,7 @@ export type UseUserUpdateResult = MutationHookResult<{
   data: UpdateUserRequest;
 }> & {
   updateUser: (id: string, data: UpdateUserRequest) => void;
+  isUpdating: boolean;
 };
 
 export const useUserUpdate = (): UseUserUpdateResult => {
@@ -138,11 +140,13 @@ export const useUserUpdate = (): UseUserUpdateResult => {
   return {
     ...mapped,
     updateUser: (id, data) => mapped.mutate({ id, data }),
+    isUpdating: mapped.isPending,
   };
 };
 
 export type UseUserDeleteResult = MutationHookResult<{ id: string }> & {
   deleteUser: (id: string) => void;
+  isDeleting: boolean;
 };
 
 export const useUserDelete = (): UseUserDeleteResult => {
@@ -204,5 +208,6 @@ export const useUserDelete = (): UseUserDeleteResult => {
   return {
     ...mapped,
     deleteUser: (id) => mapped.mutate({ id }),
+    isDeleting: mapped.isPending,
   };
 };

@@ -264,6 +264,7 @@ paths:
       security:
         - BearerAuth:
             - admin
+            - doctor
       parameters:
         - $ref: '#/components/parameters/PageParam'
         - $ref: '#/components/parameters/PerPageParam'
@@ -297,6 +298,7 @@ paths:
       security:
         - BearerAuth:
             - admin
+            - doctor
       requestBody:
         required: true
         content:
@@ -327,6 +329,7 @@ paths:
       security:
         - BearerAuth:
             - admin
+            - doctor
       parameters:
         - $ref: '#/components/parameters/IdParam'
       responses:
@@ -352,6 +355,7 @@ paths:
       security:
         - BearerAuth:
             - admin
+            - doctor
       parameters:
         - $ref: '#/components/parameters/IdParam'
       requestBody:
@@ -383,6 +387,7 @@ paths:
       security:
         - BearerAuth:
             - admin
+            - doctor
       parameters:
         - $ref: '#/components/parameters/IdParam'
       responses:

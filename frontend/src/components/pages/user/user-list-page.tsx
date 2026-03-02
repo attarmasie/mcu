@@ -3,6 +3,7 @@ import type { ListUsersParams } from "@/generated/models";
 import { useDataTable } from "@/hooks/use-data-table";
 import { useUsersList } from "@/hooks/use-users";
 import { columns } from "./columns";
+import { UserFormDialog } from "./user-form-dialog";
 
 export function UsersListPage() {
   const { pagination, setPagination, params } = useDataTable();
@@ -17,7 +18,7 @@ export function UsersListPage() {
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Users</h1>
-        {/* <UserFormDialog /> */}
+        <UserFormDialog />
       </div>
 
       <DataTable
