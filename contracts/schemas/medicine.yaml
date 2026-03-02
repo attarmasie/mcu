@@ -5,6 +5,7 @@ Medicine:
     - code
     - name
     - current_stock
+    - minimum_stock
     - strength
     - dosage_form
     - is_prescription_required
@@ -32,6 +33,11 @@ Medicine:
       minimum: 0
       example: 120
       description: Current total stock from all active batches
+    minimum_stock:
+      type: integer
+      minimum: 0
+      example: 10
+      description: Minimum stock threshold for reorder alert
     strength:
       type: string
       example: "500 mg"
@@ -72,6 +78,7 @@ CreateMedicineRequest:
     - strength
     - dosage_form
     - is_prescription_required
+    - minimum_stock
   properties:
     code:
       type: string
@@ -91,6 +98,11 @@ CreateMedicineRequest:
     is_prescription_required:
       type: boolean
       example: false
+    minimum_stock:
+      type: integer
+      minimum: 0
+      example: 10
+      description: Minimum stock threshold for reorder alert
     notes:
       type: string
       nullable: true
@@ -105,6 +117,7 @@ UpdateMedicineRequest:
     - strength
     - dosage_form
     - is_prescription_required
+    - minimum_stock
   properties:
     id:
       type: string
@@ -127,6 +140,11 @@ UpdateMedicineRequest:
     is_prescription_required:
       type: boolean
       example: false
+    minimum_stock:
+      type: integer
+      minimum: 0
+      example: 10
+      description: Minimum stock threshold for reorder alert
     notes:
       type: string
       nullable: true

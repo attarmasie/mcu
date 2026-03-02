@@ -18,6 +18,9 @@ COPY . .
 # The CGO_ENABLED=0 flag creates a statically linked binary
 RUN CGO_ENABLED=0 GOOS=linux go build -o app ./cmd/main.go
 
+# Build the seeder binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o seeder ./cmd/tools/seed/main.go
+
 # Stage 2: Final Image
 # Start a new stage from scratch (a very small base image) or distroless
 FROM scratch
@@ -25,8 +28,9 @@ FROM scratch
 # Set the working directory to the root
 WORKDIR /
 
-# Copy the built binary from the 'builder' stage
+# Copy the built binaries from the 'builder' stage
 COPY --from=builder /app/app .
+COPY --from=builder /app/seeder .
 
 # Expose the port the app runs on (Gin defaults to 8080)
 EXPOSE 8080

@@ -17,7 +17,6 @@ func ToGeneratedMedicineBatch(b *models.MedicineBatch) generated.MedicineBatch {
 		ExpirationDate: openapi_types.Date{Time: b.ExpirationDate},
 		Stock:          b.Quantity,
 		Unit:           b.Unit,
-		MinimumStock:   b.MinimumStock,
 		Status:         generated.MedicineBatchStatus(b.Status),
 		CreatedAt:      b.CreatedAt,
 		UpdatedAt:      b.UpdatedAt,
@@ -39,7 +38,6 @@ func ToModelMedicineBatch(req generated.CreateMedicineBatchRequest) *models.Medi
 		ExpirationDate: req.ExpirationDate.Time,
 		Quantity:       req.Stock,
 		Unit:           req.Unit,
-		MinimumStock:   req.MinimumStock,
 		Status:         "active",
 	}
 }
@@ -50,7 +48,6 @@ func ToModelMedicineBatchUpdate(req generated.UpdateMedicineBatchRequest) *model
 		ExpirationDate: req.ExpirationDate.Time,
 		Quantity:       req.Stock,
 		Unit:           req.Unit,
-		MinimumStock:   req.MinimumStock,
 		Status:         "active",
 	}
 }

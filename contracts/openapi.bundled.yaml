@@ -2007,6 +2007,7 @@ components:
         - code
         - name
         - current_stock
+        - minimum_stock
         - strength
         - dosage_form
         - is_prescription_required
@@ -2034,6 +2035,11 @@ components:
           minimum: 0
           example: 120
           description: Current total stock from all active batches
+        minimum_stock:
+          type: integer
+          minimum: 0
+          example: 10
+          description: Minimum stock threshold for reorder alert
         strength:
           type: string
           example: 500 mg
@@ -2080,6 +2086,7 @@ components:
         - strength
         - dosage_form
         - is_prescription_required
+        - minimum_stock
       properties:
         code:
           type: string
@@ -2104,6 +2111,11 @@ components:
         is_prescription_required:
           type: boolean
           example: false
+        minimum_stock:
+          type: integer
+          minimum: 0
+          example: 10
+          description: Minimum stock threshold for reorder alert
         notes:
           type: string
           nullable: true
@@ -2117,6 +2129,7 @@ components:
         - strength
         - dosage_form
         - is_prescription_required
+        - minimum_stock
       properties:
         id:
           type: string
@@ -2144,6 +2157,11 @@ components:
         is_prescription_required:
           type: boolean
           example: false
+        minimum_stock:
+          type: integer
+          minimum: 0
+          example: 10
+          description: Minimum stock threshold for reorder alert
         notes:
           type: string
           nullable: true
@@ -2234,7 +2252,6 @@ components:
         - expiration_date
         - stock
         - unit
-        - minimum_stock
         - status
         - created_at
         - updated_at
@@ -2267,11 +2284,6 @@ components:
           type: string
           example: tablet
           description: Stock unit
-        minimum_stock:
-          type: integer
-          minimum: 0
-          example: 10
-          description: Minimum stock threshold
         status:
           type: string
           enum:
@@ -2296,7 +2308,6 @@ components:
         - expiration_date
         - stock
         - unit
-        - minimum_stock
       properties:
         medicine_id:
           type: string
@@ -2316,10 +2327,6 @@ components:
         unit:
           type: string
           example: tablet
-        minimum_stock:
-          type: integer
-          minimum: 0
-          example: 10
     UpdateMedicineBatchRequest:
       type: object
       required:
@@ -2327,7 +2334,6 @@ components:
         - expiration_date
         - stock
         - unit
-        - minimum_stock
       properties:
         batch_number:
           type: string
@@ -2343,10 +2349,6 @@ components:
         unit:
           type: string
           example: tablet
-        minimum_stock:
-          type: integer
-          minimum: 0
-          example: 10
   securitySchemes:
     BearerAuth:
       type: http

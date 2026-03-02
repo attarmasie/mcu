@@ -3,6 +3,7 @@ import type {
   ListPatientsParams,
   Patient,
   Meta,
+  UpdatePatientRequest,
 } from "@/generated/models";
 import {
   getListPatientsQueryKey,
@@ -80,9 +81,9 @@ export const usePatientCreate = (): UsePatientCreateResult => {
 
 export type UsePatientUpdateResult = MutationHookResult<{
   id: string;
-  data: CreatePatientRequest;
+  data: UpdatePatientRequest;
 }> & {
-  updatePatient: (id: string, data: CreatePatientRequest) => void;
+  updatePatient: (id: string, data: UpdatePatientRequest) => void;
   isUpdating: boolean;
 };
 
@@ -103,7 +104,7 @@ export const usePatientUpdate = (): UsePatientUpdateResult => {
 
   const mapped = mapMutation<{
     id: string;
-    data: CreatePatientRequest;
+    data: UpdatePatientRequest;
   }>(mutation);
 
   return {

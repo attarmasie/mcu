@@ -27,8 +27,8 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Medicine } from "@/generated/models";
 import { useMedicineUpdate } from "@/hooks/use-medicine";
 import {
-  createMedicineSchema,
-  type CreateMedicineFormData,
+  updateMedicineSchema,
+  type UpdateMedicineFormData,
   dosageFormOptions,
 } from "@/schemas/medicine";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,12 +49,15 @@ export function MedicineEditDialog({
 }: MedicineEditDialogProps) {
   const { updateMedicine, isUpdating } = useMedicineUpdate();
 
-  const form = useForm<CreateMedicineFormData>({
-    resolver: zodResolver(createMedicineSchema),
+  const form = useForm<UpdateMedicineFormData>({
+    resolver: zodResolver(updateMedicineSchema),
     defaultValues: {
+      id: "",
       name: "",
+      code: "",
       dosage_form: "tablet",
       strength: "",
+      minimum_stock: 0,
       is_prescription_required: false,
       notes: "",
     },
@@ -63,21 +66,22 @@ export function MedicineEditDialog({
   useEffect(() => {
     if (open && medicine) {
       form.reset({
+        id: medicine.id,
         name: medicine.name,
+        code: medicine.code,
         dosage_form:
-          medicine.dosage_form as CreateMedicineFormData["dosage_form"],
+          medicine.dosage_form as UpdateMedicineFormData["dosage_form"],
         strength: medicine.strength ?? "",
+        minimum_stock: medicine.minimum_stock ?? 0,
         is_prescription_required: medicine.is_prescription_required,
         notes: medicine.notes ?? "",
       });
     }
   }, [open, medicine, form]);
 
-  const onSubmit = (data: CreateMedicineFormData) => {
-    if (medicine.id) {
-      updateMedicine(medicine.id, data);
-      onOpenChange(false);
-    }
+  const onSubmit = (data: UpdateMedicineFormData) => {
+    updateMedicine(medicine.id, data);
+    onOpenChange(false);
   };
 
   return (
@@ -155,6 +159,28 @@ export function MedicineEditDialog({
                     <FormLabel>Strength</FormLabel>
                     <FormControl>
                       <Input placeholder="500 mg" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="minimum_stock"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Minimum Stock *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(Number(e.target.value))
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

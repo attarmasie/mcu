@@ -23,7 +23,6 @@ type BatchFormState = {
   expiration_date: string;
   stock: string;
   unit: string;
-  minimum_stock: string;
 };
 
 const emptyForm = (medicine: Medicine): BatchFormState => ({
@@ -31,7 +30,6 @@ const emptyForm = (medicine: Medicine): BatchFormState => ({
   expiration_date: "",
   stock: "0",
   unit: medicine.dosage_form ?? "unit",
-  minimum_stock: "0",
 });
 
 function statusVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
@@ -46,7 +44,6 @@ function toUpdatePayload(form: BatchFormState): UpdateMedicineBatchRequest {
     expiration_date: form.expiration_date,
     stock: Number(form.stock),
     unit: form.unit,
-    minimum_stock: Number(form.minimum_stock),
   };
 }
 
@@ -63,7 +60,6 @@ function toForm(batch: MedicineBatch): BatchFormState {
     expiration_date: batch.expiration_date,
     stock: String(batch.stock),
     unit: batch.unit,
-    minimum_stock: String(batch.minimum_stock),
   };
 }
 
@@ -183,7 +179,6 @@ export function MedicineBatchesDialog({ medicine, open, onOpenChange }: Medicine
                       <td className="p-2 font-medium">{batch.batch_number}</td>
                       <td className="p-2">{formatDate(batch.expiration_date)}</td>
                       <td className="p-2">{batch.stock}</td>
-                      <td className="p-2">{batch.minimum_stock}</td>
                       <td className="p-2">{batch.unit}</td>
                       <td className="p-2">
                         <Badge variant={statusVariant(batch.status)}>{batch.status}</Badge>
@@ -322,15 +317,6 @@ function BatchForm({
       <div className="space-y-2">
         <Label>Stock</Label>
         <Input type="number" min={0} value={form.stock} onChange={(e) => onChange({ ...form, stock: e.target.value })} />
-      </div>
-      <div className="space-y-2">
-        <Label>Minimum Stock</Label>
-        <Input
-          type="number"
-          min={0}
-          value={form.minimum_stock}
-          onChange={(e) => onChange({ ...form, minimum_stock: e.target.value })}
-        />
       </div>
       <div className="space-y-2">
         <Label>Unit</Label>

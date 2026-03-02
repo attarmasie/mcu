@@ -8,7 +8,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import type { Medicine } from "@/generated/models";
 import { formatDateTime } from "@/lib/formatters";
-import { Pill, Thermometer, FileText, BadgeCheck, Package } from "lucide-react";
+import { Pill, Thermometer, FileText, BadgeCheck, Package, AlertTriangle, Archive } from "lucide-react";
 
 interface MedicineDetailDialogProps {
   medicine: Medicine;
@@ -71,6 +71,35 @@ export function MedicineDetailDialog({
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Stock Information */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+              Stock Information
+            </h3>
+            {medicine.current_stock <= medicine.minimum_stock && (
+              <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <span>
+                  Stok saat ini ({medicine.current_stock}) sudah mencapai atau di bawah batas minimum ({medicine.minimum_stock}). Segera lakukan restok!
+                </span>
+              </div>
+            )}
+            <div className="grid grid-cols-2 gap-4">
+              <DetailItem
+                icon={Archive}
+                label="Current Stock"
+                value={String(medicine.current_stock)}
+              />
+              <DetailItem
+                icon={Archive}
+                label="Minimum Stock"
+                value={String(medicine.minimum_stock)}
+              />
+            </div>
+          </div>
+
+          <Separator />
+
           {/* Medicine Information */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">

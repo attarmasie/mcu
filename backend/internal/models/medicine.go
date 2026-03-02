@@ -8,6 +8,7 @@ type Medicine struct {
 	Name                   string  `gorm:"type:varchar(255);not null;index" json:"name"`
 	Code                   string  `gorm:"type:varchar(255);not null" json:"code"`
 	CurrentStock           int     `gorm:"not null;default:0;check:current_stock >= 0" json:"current_stock"`
+	MinimumStock           int     `gorm:"not null;default:0;check:minimum_stock >= 0" json:"minimum_stock"`
 	DosageForm             string  `gorm:"type:varchar(50);not null" json:"dosage_form"` // tablet, capsule, syrup, injection, ointment
 	Strength               *string `gorm:"type:varchar(100)" json:"strength"`            // 500 mg, 250 mg/5 ml
 	Unit                   string  `gorm:"type:varchar(50);not null" json:"unit"`        // tablet, bottle, strip

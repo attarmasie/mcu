@@ -7,7 +7,6 @@ MedicineBatch:
     - expiration_date
     - stock
     - unit
-    - minimum_stock
     - status
     - created_at
     - updated_at
@@ -40,11 +39,6 @@ MedicineBatch:
       type: string
       example: "tablet"
       description: Stock unit
-    minimum_stock:
-      type: integer
-      minimum: 0
-      example: 10
-      description: Minimum stock threshold
     status:
       type: string
       enum: [active, expired, depleted]
@@ -67,7 +61,6 @@ CreateMedicineBatchRequest:
     - expiration_date
     - stock
     - unit
-    - minimum_stock
   properties:
     medicine_id:
       type: string
@@ -87,10 +80,6 @@ CreateMedicineBatchRequest:
     unit:
       type: string
       example: "tablet"
-    minimum_stock:
-      type: integer
-      minimum: 0
-      example: 10
 
 UpdateMedicineBatchRequest:
   type: object
@@ -99,7 +88,6 @@ UpdateMedicineBatchRequest:
     - expiration_date
     - stock
     - unit
-    - minimum_stock
   properties:
     batch_number:
       type: string
@@ -115,7 +103,3 @@ UpdateMedicineBatchRequest:
     unit:
       type: string
       example: "tablet"
-    minimum_stock:
-      type: integer
-      minimum: 0
-      example: 10

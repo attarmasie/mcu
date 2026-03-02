@@ -18,6 +18,7 @@ func ToGeneratedMedicine(m *models.Medicine) generated.Medicine {
 		Name:                   m.Name,
 		Code:                   m.Code,
 		CurrentStock:           m.CurrentStock,
+		MinimumStock:           m.MinimumStock,
 		DosageForm:             generated.MedicineDosageForm(m.DosageForm),
 		Strength:               strength,
 		IsPrescriptionRequired: m.IsPrescriptionRequired,
@@ -40,6 +41,7 @@ func ToModelMedicine(req generated.CreateMedicineRequest) *models.Medicine {
 	return &models.Medicine{
 		Name:                   req.Name,
 		Code:                   req.Code,
+		MinimumStock:           req.MinimumStock,
 		DosageForm:             string(req.DosageForm),
 		Strength:               &req.Strength,
 		IsPrescriptionRequired: req.IsPrescriptionRequired,

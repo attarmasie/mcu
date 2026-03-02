@@ -48,6 +48,7 @@ export function MedicineFormDialog() {
       name: "",
       dosage_form: "tablet",
       strength: "",
+      minimum_stock: 0,
       is_prescription_required: false,
       notes: "",
     },
@@ -148,6 +149,28 @@ export function MedicineFormDialog() {
                     <FormLabel>Strength</FormLabel>
                     <FormControl>
                       <Input placeholder="500 mg" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="minimum_stock"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Minimum Stock *</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        placeholder="0"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(Number(e.target.value))
+                        }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
