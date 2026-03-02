@@ -1,6 +1,6 @@
 # Stage 1: Builder
 # Use an official Go runtime as a parent image
-FROM golang:1.23-alpine AS builder
+FROM golang:1.25-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -16,7 +16,7 @@ COPY . .
 
 # Build the application
 # The CGO_ENABLED=0 flag creates a statically linked binary
-RUN CGO_ENABLED=0 GOOS=linux go build -o app .
+RUN CGO_ENABLED=0 GOOS=linux go build -o app ./cmd/main.go
 
 # Stage 2: Final Image
 # Start a new stage from scratch (a very small base image) or distroless

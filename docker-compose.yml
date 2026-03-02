@@ -1,0 +1,98 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: redminote8
+      POSTGRES_DB: mcu_attarmasi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d mcu_attarmasi"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass redminote8
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redminote8", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    ports:
+      - "5540:5540"
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - redisinsight_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    # Vite injects env vars during build. If we want them mapped during docker-compose build,
+    # it relies on the `.env.production` file being copied into the frontend container.
+    depends_on:
+      - backend
+
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui-container
+    environment:
+      SWAGGER_JSON: /contracts/openapi.bundled.yaml
+      SWAGGER_URL_PRIMARY_NAME: MCU API
+    volumes:
+      - ./contracts:/contracts:ro
+    expose:
+      - "8080"
+    depends_on:
+      - backend
+
+  swagger-proxy:
+    build:
+      context: ./docs/swagger
+      dockerfile: Dockerfile
+    ports:
+      - "8081:80"
+    env_file:
+      - ./backend/.env.production
+    environment:
+      SWAGGER_USERNAME: ${SWAGGER_USERNAME:-admin}
+      SWAGGER_PASSWORD: ${SWAGGER_PASSWORD:-adminmcuattarmasi}
+    depends_on:
+      - swagger
+
+volumes:
+  postgres_data:
+  redis_data:
+  redisinsight_data:
