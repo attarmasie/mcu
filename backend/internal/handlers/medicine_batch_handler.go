@@ -71,8 +71,9 @@ func (h *MedicineBatchHandler) CreateMedicineBatch(c *gin.Context) {
 	}
 
 	batch := mapper.ToModelMedicineBatch(req)
+	ctx := service.WithActorUserID(c.Request.Context(), c.GetString("user_id"))
 
-	if err := h.service.CreateBatch(c.Request.Context(), batch); err != nil {
+	if err := h.service.CreateBatch(ctx, batch); err != nil {
 		c.JSON(http.StatusInternalServerError, generated.Error{
 			Message: "Failed to create medicine batch",
 		})
@@ -105,7 +106,7 @@ func (h *MedicineBatchHandler) GetMedicineBatch(c *gin.Context, id generated.IdP
 }
 
 func (h *MedicineBatchHandler) UpdateMedicineBatch(c *gin.Context, id generated.IdParam) {
-	var req generated.CreateMedicineBatchRequest
+	var req generated.UpdateMedicineBatchRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, generated.Error{
@@ -114,9 +115,10 @@ func (h *MedicineBatchHandler) UpdateMedicineBatch(c *gin.Context, id generated.
 		return
 	}
 
-	batch := mapper.ToModelMedicineBatch(req)
+	batch := mapper.ToModelMedicineBatchUpdate(req)
+	ctx := service.WithActorUserID(c.Request.Context(), c.GetString("user_id"))
 
-	if err := h.service.UpdateBatch(c.Request.Context(), id, batch); err != nil {
+	if err := h.service.UpdateBatch(ctx, id, batch); err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, generated.Error{
 				Message: "Batch not found",
@@ -139,7 +141,8 @@ func (h *MedicineBatchHandler) DeleteMedicineBatch(
 	c *gin.Context,
 	id generated.IdParam,
 ) {
-	if err := h.service.DeleteBatch(c.Request.Context(), id); err != nil {
+	ctx := service.WithActorUserID(c.Request.Context(), c.GetString("user_id"))
+	if err := h.service.DeleteBatch(ctx, id); err != nil {
 		if err == gorm.ErrRecordNotFound {
 			c.JSON(http.StatusNotFound, generated.Error{
 				Message: "Batch not found",

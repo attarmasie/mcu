@@ -47,7 +47,7 @@ MedicineBatch:
       description: Minimum stock threshold
     status:
       type: string
-      enum: [active, inactive]
+      enum: [active, expired, depleted]
       example: "active"
       description: Batch status
     created_at:

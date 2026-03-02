@@ -21,6 +21,8 @@ tags:
     description: User management
   - name: patients
     description: Patient management
+  - name: patient_checkups
+    description: Patient checkup history management
   - name: medicines
     description: Medicine master data management
   - name: medicine_batches
@@ -48,11 +50,20 @@ paths:
   /patients/{id}:
     $ref: "./paths/patient.yaml#/patients_by_id"
 
+  /patient-checkups:
+    $ref: "./paths/patient_checkups.yaml#/patient_checkups"
+
+  /patient-checkups/{id}:
+    $ref: "./paths/patient_checkups.yaml#/patient_checkups_by_id"
+
   /medicines:
-    $ref: "./paths/medicines.yaml#/medicines"
+    $ref: "./paths/medicine.yaml#/medicines"
 
   /medicines/{id}:
-    $ref: "./paths/medicines.yaml#/medicines_by_id"
+    $ref: "./paths/medicine.yaml#/medicines_by_id"
+
+  /medicines/{id}/stock-activities:
+    $ref: "./paths/medicine.yaml#/medicine_stock_activities"
 
   /medicine-batches:
     $ref: "./paths/medicine_batches.yaml#/medicine_batches"
@@ -78,6 +89,20 @@ components:
     PatientTypeParam:
       $ref: "./parameters/patient.yaml#/PatientTypeParam"
 
+    # Patient checkup parameters
+    PatientCheckupSearchParam:
+      $ref: "./parameters/patient_checkup.yaml#/PatientCheckupSearchParam"
+    PatientCheckupPatientIdParam:
+      $ref: "./parameters/patient_checkup.yaml#/PatientCheckupPatientIdParam"
+    PatientCheckupStatusParam:
+      $ref: "./parameters/patient_checkup.yaml#/PatientCheckupStatusParam"
+    PatientCheckupVisitDateParam:
+      $ref: "./parameters/patient_checkup.yaml#/PatientCheckupVisitDateParam"
+    PatientCheckupDateFromParam:
+      $ref: "./parameters/patient_checkup.yaml#/PatientCheckupDateFromParam"
+    PatientCheckupDateToParam:
+      $ref: "./parameters/patient_checkup.yaml#/PatientCheckupDateToParam"
+
     # Medicine parameters
     MedicineSearchParam:
       $ref: "./parameters/medicine.yaml#/MedicineSearchParam"
@@ -87,6 +112,8 @@ components:
       $ref: "./parameters/medicine.yaml#/MedicineDosageFormParam"
     PrescriptionRequiredParam:
       $ref: "./parameters/medicine.yaml#/PrescriptionRequiredParam"
+    MedicineStockActivitySourceParam:
+      $ref: "./parameters/medicine.yaml#/MedicineStockActivitySourceParam"
 
     # Medicine batch parameters
     MedicineIdParam:
@@ -152,6 +179,16 @@ components:
     UpdatePatientRequest:
       $ref: "./schemas/patient.yaml#/UpdatePatientRequest"
 
+    # Patient Checkup
+    PatientCheckup:
+      $ref: "./schemas/patient_checkup.yaml#/PatientCheckup"
+    PatientCheckupMedicine:
+      $ref: "./schemas/patient_checkup.yaml#/PatientCheckupMedicine"
+    CreatePatientCheckupRequest:
+      $ref: "./schemas/patient_checkup.yaml#/CreatePatientCheckupRequest"
+    UpdatePatientCheckupRequest:
+      $ref: "./schemas/patient_checkup.yaml#/UpdatePatientCheckupRequest"
+
     # Medicine
     Medicine:
       $ref: "./schemas/medicine.yaml#/Medicine"
@@ -159,6 +196,8 @@ components:
       $ref: "./schemas/medicine.yaml#/CreateMedicineRequest"
     UpdateMedicineRequest:
       $ref: "./schemas/medicine.yaml#/UpdateMedicineRequest"
+    MedicineStockActivity:
+      $ref: "./schemas/medicine.yaml#/MedicineStockActivity"
 
     # Medicine Batch
     MedicineBatch:

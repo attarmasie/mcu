@@ -9,6 +9,7 @@ import (
 type CombinedHandler struct {
 	*UserHandler
 	*PatientHandler
+	*PatientCheckupHandler
 	*AuthHandler
 	*MedicineHandler
 	*MedicineBatchHandler
@@ -17,16 +18,19 @@ type CombinedHandler struct {
 func NewCombinedHandler(
 	userService service.UserService,
 	patientService service.PatientService,
+	patientCheckupService service.PatientCheckupService,
 	authService service.AuthService,
 	medicineService service.MedicineService,
 	medicineBatchService service.MedicineBatchService,
+	medicineStockActivityService service.MedicineStockActivityService,
 ) *CombinedHandler {
 	return &CombinedHandler{
-		UserHandler:          NewUserHandler(userService),
-		PatientHandler:       NewPatientHandler(patientService),
-		AuthHandler:          NewAuthHandler(authService),
-		MedicineHandler:      NewMedicineHandler(medicineService),
-		MedicineBatchHandler: NewMedicineBatchHandler(medicineBatchService),
+		UserHandler:           NewUserHandler(userService),
+		PatientHandler:        NewPatientHandler(patientService),
+		PatientCheckupHandler: NewPatientCheckupHandler(patientCheckupService),
+		AuthHandler:           NewAuthHandler(authService),
+		MedicineHandler:       NewMedicineHandler(medicineService, medicineStockActivityService),
+		MedicineBatchHandler:  NewMedicineBatchHandler(medicineBatchService),
 	}
 }
 

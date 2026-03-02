@@ -16,28 +16,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Medicine } from "@/generated/models";
-import { useMedicineDelete } from "@/hooks/use-medicine";
-import { Boxes, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import type { PatientCheckup } from "@/generated/models";
+import { usePatientCheckupDelete } from "@/hooks/use-patient-checkup";
+import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { MedicineBatchesDialog } from "./medicine-batches-dialog";
-import { MedicineDetailDialog } from "./medicine-detail-dialog";
-import { MedicineEditDialog } from "./medicine-edit-dialog";
+import { PatientCheckupDetailDialog } from "./patient-checkup-detail-dialog";
+import { PatientCheckupEditDialog } from "./patient-checkup-edit-dialog";
 
-interface MedicineActionsProps {
-  medicine: Medicine;
+interface PatientCheckupActionsProps {
+  checkup: PatientCheckup;
 }
 
-export function MedicineActions({ medicine }: MedicineActionsProps) {
+export function PatientCheckupActions({ checkup }: PatientCheckupActionsProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
-  const [showBatchesDialog, setShowBatchesDialog] = useState(false);
-  const { deleteMedicine, isDeleting } = useMedicineDelete();
+  const { deletePatientCheckup, isDeleting } = usePatientCheckupDelete();
 
   const handleDelete = () => {
-    if (medicine.id) {
-      deleteMedicine(medicine.id);
+    if (checkup.id) {
+      deletePatientCheckup(checkup.id);
       setShowDeleteDialog(false);
     }
   };
@@ -60,10 +58,6 @@ export function MedicineActions({ medicine }: MedicineActionsProps) {
             <Pencil className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setShowBatchesDialog(true)}>
-            <Boxes className="mr-2 h-4 w-4" />
-            Manage Stock
-          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => setShowDeleteDialog(true)}
@@ -75,14 +69,13 @@ export function MedicineActions({ medicine }: MedicineActionsProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Delete checkup?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              medicine record for <strong>{medicine.name}</strong>.
+              This action cannot be undone and will permanently delete this
+              patient checkup record.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -98,24 +91,16 @@ export function MedicineActions({ medicine }: MedicineActionsProps) {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Edit Dialog */}
-      <MedicineEditDialog
-        medicine={medicine}
+      <PatientCheckupEditDialog
+        checkup={checkup}
         open={showEditDialog}
         onOpenChange={setShowEditDialog}
       />
 
-      {/* Detail Dialog */}
-      <MedicineDetailDialog
-        medicine={medicine}
+      <PatientCheckupDetailDialog
+        checkup={checkup}
         open={showDetailDialog}
         onOpenChange={setShowDetailDialog}
-      />
-
-      <MedicineBatchesDialog
-        medicine={medicine}
-        open={showBatchesDialog}
-        onOpenChange={setShowBatchesDialog}
       />
     </>
   );

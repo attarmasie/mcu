@@ -1,0 +1,48 @@
+PatientCheckupSearchParam:
+  name: search
+  in: query
+  schema:
+    type: string
+  description: >
+    Search patient checkups by chief complaint, diagnosis,
+    notes, doctor name, or symptoms (partial match, case-insensitive)
+
+PatientCheckupPatientIdParam:
+  name: patient_id
+  in: query
+  schema:
+    type: string
+    format: uuid
+  description: Filter checkup history by patient UUID
+
+PatientCheckupStatusParam:
+  name: status
+  in: query
+  schema:
+    type: string
+    enum: [scheduled, completed, cancelled]
+  description: Filter checkups by workflow status
+
+PatientCheckupVisitDateParam:
+  name: visit_date
+  in: query
+  schema:
+    type: string
+    format: date
+  description: Filter checkups by visit date (exact day)
+
+PatientCheckupDateFromParam:
+  name: visit_date_from
+  in: query
+  schema:
+    type: string
+    format: date
+  description: Filter checkups with visit date from (>=)
+
+PatientCheckupDateToParam:
+  name: visit_date_to
+  in: query
+  schema:
+    type: string
+    format: date
+  description: Filter checkups with visit date to (<=)

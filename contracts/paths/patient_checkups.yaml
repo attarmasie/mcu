@@ -1,0 +1,140 @@
+patient_checkups:
+  get:
+    operationId: listPatientCheckups
+    summary: Get patient checkup history
+    description: Retrieve a paginated list of patient checkups
+    tags:
+      - patient_checkups
+    security:
+      - BearerAuth: [admin, doctor]
+    parameters:
+      - $ref: "../parameters/common.yaml#/PageParam"
+      - $ref: "../parameters/common.yaml#/PerPageParam"
+      - $ref: "../parameters/patient_checkup.yaml#/PatientCheckupSearchParam"
+      - $ref: "../parameters/patient_checkup.yaml#/PatientCheckupPatientIdParam"
+      - $ref: "../parameters/patient_checkup.yaml#/PatientCheckupStatusParam"
+      - $ref: "../parameters/patient_checkup.yaml#/PatientCheckupVisitDateParam"
+      - $ref: "../parameters/patient_checkup.yaml#/PatientCheckupDateFromParam"
+      - $ref: "../parameters/patient_checkup.yaml#/PatientCheckupDateToParam"
+    responses:
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: "../schemas/patient_checkup.yaml#/PatientCheckup"
+                meta:
+                  $ref: "../schemas/common.yaml#/Meta"
+      "400":
+        $ref: "../components/responses.yaml#/BadRequest"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+
+  post:
+    operationId: createPatientCheckup
+    summary: Create patient visit schedule
+    description: Admin creates patient visit schedule with initial symptoms
+    tags:
+      - patient_checkups
+    security:
+      - BearerAuth: [admin]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/patient_checkup.yaml#/CreatePatientCheckupRequest"
+    responses:
+      "201":
+        description: Patient checkup created
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../schemas/patient_checkup.yaml#/PatientCheckup"
+      "400":
+        $ref: "../components/responses.yaml#/BadRequest"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+
+patient_checkups_by_id:
+  get:
+    operationId: getPatientCheckup
+    summary: Get patient checkup by ID
+    description: Retrieve a specific patient checkup by UUID
+    tags:
+      - patient_checkups
+    security:
+      - BearerAuth: [admin, doctor]
+    parameters:
+      - $ref: "../parameters/common.yaml#/IdParam"
+    responses:
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../schemas/patient_checkup.yaml#/PatientCheckup"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+
+  put:
+    operationId: updatePatientCheckup
+    summary: Update patient checkup
+    description: Admin or doctor edits visit schedule, symptoms, and clinical result
+    tags:
+      - patient_checkups
+    security:
+      - BearerAuth: [admin, doctor]
+    parameters:
+      - $ref: "../parameters/common.yaml#/IdParam"
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/patient_checkup.yaml#/UpdatePatientCheckupRequest"
+    responses:
+      "200":
+        description: Patient checkup updated
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../schemas/patient_checkup.yaml#/PatientCheckup"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+
+  delete:
+    operationId: deletePatientCheckup
+    summary: Delete patient checkup
+    description: Delete a patient checkup record
+    tags:
+      - patient_checkups
+    security:
+      - BearerAuth: [admin]
+    parameters:
+      - $ref: "../parameters/common.yaml#/IdParam"
+    responses:
+      "204":
+        description: Patient checkup deleted
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"

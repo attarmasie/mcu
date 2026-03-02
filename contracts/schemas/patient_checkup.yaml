@@ -1,0 +1,374 @@
+PatientCheckupMedicine:
+  type: object
+  required:
+    - medicine_id
+    - medicine_name
+    - quantity
+    - dosage
+    - frequency
+    - duration_days
+  properties:
+    medicine_id:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+      description: Medicine UUID
+    medicine_name:
+      type: string
+      example: "Paracetamol"
+      description: Snapshot medicine name when prescribed
+    quantity:
+      type: integer
+      minimum: 1
+      example: 10
+      description: Dispensed quantity from inventory
+    dosage:
+      type: string
+      example: "500 mg"
+      description: Single dose amount
+    frequency:
+      type: string
+      example: "3x sehari"
+      description: Frequency instruction
+    duration_days:
+      type: integer
+      minimum: 1
+      example: 5
+      description: Duration in days
+    notes:
+      type: string
+      nullable: true
+      example: "Setelah makan"
+      description: Additional usage notes
+
+PatientCheckup:
+  type: object
+  required:
+    - id
+    - patient_id
+    - visit_date
+    - status
+    - chief_complaint
+    - symptoms
+    - created_at
+    - updated_at
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: "223e4567-e89b-12d3-a456-426614174111"
+      description: Checkup UUID
+    patient_id:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+      description: Patient UUID
+    visit_date:
+      type: string
+      format: date-time
+      example: "2026-03-02T10:15:00Z"
+      description: Planned visit date and time
+    status:
+      type: string
+      enum: [scheduled, completed, cancelled]
+      example: "scheduled"
+      description: Visit workflow status
+    chief_complaint:
+      type: string
+      example: "Demam sejak 2 hari"
+      description: Main complaint reported when booking
+    symptoms:
+      type: array
+      items:
+        type: string
+      example: ["demam", "batuk", "pusing"]
+      description: Symptoms recorded and editable by admin/doctor
+    diagnosis:
+      type: string
+      nullable: true
+      example: "Infeksi saluran pernapasan atas"
+      description: Clinical diagnosis
+    temperature_c:
+      type: number
+      format: float
+      minimum: 30
+      maximum: 45
+      nullable: true
+      example: 38.4
+      description: Body temperature in celsius
+    blood_pressure:
+      type: string
+      nullable: true
+      example: "120/80"
+      description: Blood pressure reading
+    heart_rate:
+      type: integer
+      minimum: 0
+      nullable: true
+      example: 86
+      description: Heart rate (bpm)
+    respiratory_rate:
+      type: integer
+      minimum: 0
+      nullable: true
+      example: 18
+      description: Respiratory rate (per minute)
+    oxygen_saturation:
+      type: integer
+      minimum: 0
+      maximum: 100
+      nullable: true
+      example: 98
+      description: SpO2 percentage
+    height_cm:
+      type: number
+      format: float
+      minimum: 0
+      nullable: true
+      example: 170
+      description: Height in cm
+    weight_kg:
+      type: number
+      format: float
+      minimum: 0
+      nullable: true
+      example: 65.5
+      description: Weight in kg
+    medicines:
+      type: array
+      items:
+        $ref: "#/PatientCheckupMedicine"
+      description: Prescribed medicines during this checkup
+    treatment_plan:
+      type: string
+      nullable: true
+      example: "Istirahat cukup, minum obat teratur, kontrol 3 hari"
+      description: Treatment and follow-up plan
+    notes:
+      type: string
+      nullable: true
+      example: "Pasien memiliki riwayat alergi penicillin"
+      description: Additional notes
+    doctor_name:
+      type: string
+      nullable: true
+      example: "dr. Andi Pratama"
+      description: Doctor handling the checkup
+    follow_up_date:
+      type: string
+      format: date
+      nullable: true
+      example: "2026-03-05"
+      description: Planned follow-up date
+    created_at:
+      type: string
+      format: date-time
+      description: Creation timestamp
+    updated_at:
+      type: string
+      format: date-time
+      description: Last update timestamp
+
+CreatePatientCheckupRequest:
+  type: object
+  required:
+    - patient_id
+    - visit_date
+    - chief_complaint
+    - symptoms
+  properties:
+    patient_id:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+    visit_date:
+      type: string
+      format: date-time
+      example: "2026-03-02T10:15:00Z"
+    chief_complaint:
+      type: string
+      example: "Demam sejak 2 hari"
+    symptoms:
+      type: array
+      items:
+        type: string
+      example: ["demam", "batuk", "pusing"]
+    notes:
+      type: string
+      nullable: true
+      example: "Pasien minta jadwal pagi"
+    status:
+      type: string
+      enum: [scheduled, completed, cancelled]
+      example: "scheduled"
+    diagnosis:
+      type: string
+      nullable: true
+      example: "Infeksi saluran pernapasan atas"
+    temperature_c:
+      type: number
+      format: float
+      minimum: 30
+      maximum: 45
+      nullable: true
+      example: 38.4
+    blood_pressure:
+      type: string
+      nullable: true
+      example: "120/80"
+    heart_rate:
+      type: integer
+      minimum: 0
+      nullable: true
+      example: 86
+    respiratory_rate:
+      type: integer
+      minimum: 0
+      nullable: true
+      example: 18
+    oxygen_saturation:
+      type: integer
+      minimum: 0
+      maximum: 100
+      nullable: true
+      example: 98
+    height_cm:
+      type: number
+      format: float
+      minimum: 0
+      nullable: true
+      example: 170
+    weight_kg:
+      type: number
+      format: float
+      minimum: 0
+      nullable: true
+      example: 65.5
+    medicines:
+      type: array
+      items:
+        $ref: "#/PatientCheckupMedicine"
+    treatment_plan:
+      type: string
+      nullable: true
+      example: "Istirahat cukup, minum obat teratur, kontrol 3 hari"
+    doctor_name:
+      type: string
+      nullable: true
+      example: "dr. Andi Pratama"
+    follow_up_date:
+      type: string
+      format: date
+      nullable: true
+      example: "2026-03-05"
+    patient_allergies:
+      type: string
+      nullable: true
+      example: "Penicillin, seafood"
+      description: Optional update for patient allergies from doctor's assessment
+    patient_blood_type:
+      type: string
+      nullable: true
+      enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
+      example: "O+"
+      description: Optional update for patient blood type from doctor's assessment
+
+UpdatePatientCheckupRequest:
+  type: object
+  required:
+    - visit_date
+    - chief_complaint
+    - symptoms
+    - status
+  properties:
+    visit_date:
+      type: string
+      format: date-time
+      example: "2026-03-02T10:15:00Z"
+    chief_complaint:
+      type: string
+      example: "Demam sejak 2 hari"
+    symptoms:
+      type: array
+      items:
+        type: string
+      example: ["demam", "batuk", "pusing"]
+    status:
+      type: string
+      enum: [scheduled, completed, cancelled]
+      example: "scheduled"
+    diagnosis:
+      type: string
+      nullable: true
+      example: "Infeksi saluran pernapasan atas"
+    temperature_c:
+      type: number
+      format: float
+      minimum: 30
+      maximum: 45
+      nullable: true
+      example: 38.4
+    blood_pressure:
+      type: string
+      nullable: true
+      example: "120/80"
+    heart_rate:
+      type: integer
+      minimum: 0
+      nullable: true
+      example: 86
+    respiratory_rate:
+      type: integer
+      minimum: 0
+      nullable: true
+      example: 18
+    oxygen_saturation:
+      type: integer
+      minimum: 0
+      maximum: 100
+      nullable: true
+      example: 98
+    height_cm:
+      type: number
+      format: float
+      minimum: 0
+      nullable: true
+      example: 170
+    weight_kg:
+      type: number
+      format: float
+      minimum: 0
+      nullable: true
+      example: 65.5
+    medicines:
+      type: array
+      items:
+        $ref: "#/PatientCheckupMedicine"
+    treatment_plan:
+      type: string
+      nullable: true
+      example: "Istirahat cukup, minum obat teratur, kontrol 3 hari"
+    doctor_name:
+      type: string
+      nullable: true
+      example: "dr. Andi Pratama"
+    follow_up_date:
+      type: string
+      format: date
+      nullable: true
+      example: "2026-03-05"
+    notes:
+      type: string
+      nullable: true
+      example: "Jadwal diubah ke siang"
+    patient_allergies:
+      type: string
+      nullable: true
+      example: "Penicillin, seafood"
+      description: Optional update for patient allergies from doctor's assessment
+    patient_blood_type:
+      type: string
+      nullable: true
+      enum: [A+, A-, B+, B-, AB+, AB-, O+, O-]
+      example: "O+"
+      description: Optional update for patient blood type from doctor's assessment

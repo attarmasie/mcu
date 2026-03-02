@@ -4,6 +4,7 @@ Medicine:
     - id
     - code
     - name
+    - current_stock
     - strength
     - dosage_form
     - is_prescription_required
@@ -26,6 +27,11 @@ Medicine:
       maxLength: 255
       example: "Paracetamol"
       description: Medicine name
+    current_stock:
+      type: integer
+      minimum: 0
+      example: 120
+      description: Current total stock from all active batches
     strength:
       type: string
       example: "500 mg"
@@ -125,3 +131,77 @@ UpdateMedicineRequest:
       type: string
       nullable: true
       example: "Pain reliever and fever reducer"
+
+MedicineStockActivity:
+  type: object
+  required:
+    - id
+    - medicine_id
+    - change_type
+    - source
+    - quantity_delta
+    - stock_before
+    - stock_after
+    - created_at
+  properties:
+    id:
+      type: string
+      format: uuid
+      example: "423e4567-e89b-12d3-a456-426614174999"
+      description: Stock activity UUID
+    medicine_id:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+      description: Related medicine UUID
+    medicine_batch_id:
+      type: string
+      format: uuid
+      nullable: true
+      example: "223e4567-e89b-12d3-a456-426614174111"
+      description: Related batch UUID when applicable
+    patient_checkup_id:
+      type: string
+      format: uuid
+      nullable: true
+      example: "323e4567-e89b-12d3-a456-426614174222"
+      description: Related patient checkup UUID when stock changed by checkup
+    change_type:
+      type: string
+      enum: [increase, decrease]
+      example: "decrease"
+      description: Stock movement direction
+    source:
+      type: string
+      enum: [admin, patient_checkup]
+      example: "admin"
+      description: Source of stock movement
+    quantity_delta:
+      type: integer
+      example: -7
+      description: Signed quantity delta (negative = decrease)
+    stock_before:
+      type: integer
+      minimum: 0
+      example: 25
+      description: Total medicine stock before change
+    stock_after:
+      type: integer
+      minimum: 0
+      example: 18
+      description: Total medicine stock after change
+    notes:
+      type: string
+      nullable: true
+      example: "Manual adjustment by admin"
+      description: Optional additional context
+    created_by_user_id:
+      type: string
+      format: uuid
+      nullable: true
+      example: "523e4567-e89b-12d3-a456-426614174333"
+      description: User UUID that triggered this movement
+    created_at:
+      type: string
+      format: date-time
+      description: Activity creation timestamp

@@ -20,7 +20,7 @@ BatchStatusParam:
   in: query
   schema:
     type: string
-    enum: [active, inactive]
+    enum: [active, expired, depleted]
   description: Filter medicine batches by status
 
 ExpiredParam:

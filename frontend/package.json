@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "preview": "vite preview --host --port 4173",
     "generate": "npm run generate:api && npm run generate:rbac",
     "generate:api": "orval",
     "generate:rbac": "tsx cmd/generate-rbac.ts ../contracts/openapi.bundled.yaml src/generated/rbac.ts"

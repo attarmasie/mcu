@@ -12,6 +12,7 @@ import {
   BarChart,
   Package,
   Home,
+  ClipboardPlus,
 } from "lucide-react";
 
 export interface NavigationItem {
@@ -71,6 +72,12 @@ export const NAVIGATION: NavigationItem[] = [
     url: "/medicines",
     icon: Package,
     checkPath: "/medicines",
+  },
+  {
+    title: "Patient Checkups",
+    url: "/patient-checkups",
+    icon: ClipboardPlus,
+    checkPath: "/patient-checkups",
   },
   {
     title: "Analytics",

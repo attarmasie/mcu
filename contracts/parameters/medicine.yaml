@@ -29,3 +29,11 @@ PrescriptionRequiredParam:
   schema:
     type: boolean
   description: Filter medicines that require prescription
+
+MedicineStockActivitySourceParam:
+  name: source
+  in: query
+  schema:
+    type: string
+    enum: [admin, patient_checkup]
+  description: Filter medicine stock activities by movement source

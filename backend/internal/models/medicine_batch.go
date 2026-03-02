@@ -12,6 +12,8 @@ type MedicineBatch struct {
 	ExpirationDate time.Time `gorm:"type:date;not null;index;uniqueIndex:uq_medicine_batch" json:"expiration_date"`
 
 	Quantity     int      `gorm:"not null;check:quantity >= 0" json:"quantity"`
+	Unit         string   `gorm:"type:varchar(50);not null" json:"unit"`
+	MinimumStock int      `gorm:"not null;default:0;check:minimum_stock >= 0" json:"minimum_stock"`
 	UnitCost     *float64 `gorm:"type:decimal(15,2);check:unit_cost >= 0" json:"unit_cost"`
 	SellingPrice *float64 `gorm:"type:decimal(15,2);check:selling_price >= 0" json:"selling_price"`
 

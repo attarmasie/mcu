@@ -12,11 +12,15 @@ import (
 )
 
 type MedicineHandler struct {
-	service service.MedicineService
+	service              service.MedicineService
+	stockActivityService service.MedicineStockActivityService
 }
 
-func NewMedicineHandler(service service.MedicineService) *MedicineHandler {
-	return &MedicineHandler{service: service}
+func NewMedicineHandler(service service.MedicineService, stockActivityService service.MedicineStockActivityService) *MedicineHandler {
+	return &MedicineHandler{
+		service:              service,
+		stockActivityService: stockActivityService,
+	}
 }
 
 func (h *MedicineHandler) ListMedicines(c *gin.Context, params generated.ListMedicinesParams) {
@@ -153,4 +157,48 @@ func (h *MedicineHandler) DeleteMedicine(c *gin.Context, id generated.IdParam) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+func (h *MedicineHandler) ListMedicineStockActivities(c *gin.Context, id generated.IdParam, params generated.ListMedicineStockActivitiesParams) {
+	page := 1
+	perPage := 10
+	if params.Page != nil {
+		page = *params.Page
+	}
+	if params.PerPage != nil {
+		perPage = *params.PerPage
+	}
+
+	filter := repository.MedicineStockActivityFilter{}
+	if params.Source != nil {
+		filter.Source = string(*params.Source)
+	}
+
+	_, err := h.service.GetMedicine(c.Request.Context(), id)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, generated.Error{Message: "Medicine not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, generated.Error{Message: "Failed to fetch medicine"})
+		return
+	}
+
+	activities, total, err := h.stockActivityService.ListByMedicineID(c.Request.Context(), id, page, perPage, filter)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, generated.Error{
+			Message: "Failed to fetch stock activities",
+		})
+		return
+	}
+
+	totalInt := int(total)
+	c.JSON(http.StatusOK, gin.H{
+		"data": mapper.ToGeneratedMedicineStockActivities(activities),
+		"meta": generated.Meta{
+			Page:    &page,
+			PerPage: &perPage,
+			Total:   &totalInt,
+		},
+	})
 }

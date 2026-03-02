@@ -18,6 +18,8 @@ tags:
     description: User management
   - name: patients
     description: Patient management
+  - name: patient_checkups
+    description: Patient checkup history management
   - name: medicines
     description: Medicine master data management
   - name: medicine_batches
@@ -357,7 +359,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreatePatientRequest'
+              $ref: '#/components/schemas/UpdatePatientRequest'
       responses:
         '200':
           description: Patient updated
@@ -386,6 +388,150 @@ paths:
       responses:
         '204':
           description: Patient deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /patient-checkups:
+    get:
+      operationId: listPatientCheckups
+      summary: Get patient checkup history
+      description: Retrieve a paginated list of patient checkups
+      tags:
+        - patient_checkups
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - $ref: '#/components/parameters/PatientCheckupSearchParam'
+        - $ref: '#/components/parameters/PatientCheckupPatientIdParam'
+        - $ref: '#/components/parameters/PatientCheckupStatusParam'
+        - $ref: '#/components/parameters/PatientCheckupVisitDateParam'
+        - $ref: '#/components/parameters/PatientCheckupDateFromParam'
+        - $ref: '#/components/parameters/PatientCheckupDateToParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PatientCheckup'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: createPatientCheckup
+      summary: Create patient visit schedule
+      description: Admin creates patient visit schedule with initial symptoms
+      tags:
+        - patient_checkups
+      security:
+        - BearerAuth:
+            - admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePatientCheckupRequest'
+      responses:
+        '201':
+          description: Patient checkup created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PatientCheckup'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  '/patient-checkups/{id}':
+    get:
+      operationId: getPatientCheckup
+      summary: Get patient checkup by ID
+      description: Retrieve a specific patient checkup by UUID
+      tags:
+        - patient_checkups
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PatientCheckup'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      operationId: updatePatientCheckup
+      summary: Update patient checkup
+      description: 'Admin or doctor edits visit schedule, symptoms, and clinical result'
+      tags:
+        - patient_checkups
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePatientCheckupRequest'
+      responses:
+        '200':
+          description: Patient checkup updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PatientCheckup'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deletePatientCheckup
+      summary: Delete patient checkup
+      description: Delete a patient checkup record
+      tags:
+        - patient_checkups
+      security:
+        - BearerAuth:
+            - admin
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '204':
+          description: Patient checkup deleted
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -500,7 +646,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateMedicineRequest'
+              $ref: '#/components/schemas/UpdateMedicineRequest'
       responses:
         '200':
           description: Medicine updated
@@ -530,6 +676,40 @@ paths:
       responses:
         '204':
           description: Medicine deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  '/medicines/{id}/stock-activities':
+    get:
+      operationId: listMedicineStockActivities
+      summary: Get medicine stock activities
+      description: Retrieve stock movement history for a specific medicine
+      tags:
+        - medicines
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - $ref: '#/components/parameters/MedicineStockActivitySourceParam'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MedicineStockActivity'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -646,7 +826,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateMedicineBatchRequest'
+              $ref: '#/components/schemas/UpdateMedicineBatchRequest'
       responses:
         '200':
           description: Medicine batch updated
@@ -734,6 +914,51 @@ components:
           - student
           - general
       description: Filter by patient type
+    PatientCheckupSearchParam:
+      name: search
+      in: query
+      schema:
+        type: string
+      description: |
+        Search patient checkups by chief complaint, diagnosis, notes, doctor name, or symptoms (partial match, case-insensitive)
+    PatientCheckupPatientIdParam:
+      name: patient_id
+      in: query
+      schema:
+        type: string
+        format: uuid
+      description: Filter checkup history by patient UUID
+    PatientCheckupStatusParam:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum:
+          - scheduled
+          - completed
+          - cancelled
+      description: Filter checkups by workflow status
+    PatientCheckupVisitDateParam:
+      name: visit_date
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter checkups by visit date (exact day)
+    PatientCheckupDateFromParam:
+      name: visit_date_from
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter checkups with visit date from (>=)
+    PatientCheckupDateToParam:
+      name: visit_date_to
+      in: query
+      schema:
+        type: string
+        format: date
+      description: Filter checkups with visit date to (<=)
     MedicineSearchParam:
       name: search
       in: query
@@ -768,6 +993,15 @@ components:
       schema:
         type: boolean
       description: Filter medicines that require prescription
+    MedicineStockActivitySourceParam:
+      name: source
+      in: query
+      schema:
+        type: string
+        enum:
+          - admin
+          - patient_checkup
+      description: Filter medicine stock activities by movement source
     MedicineIdParam:
       name: medicine_id
       in: query
@@ -789,7 +1023,8 @@ components:
         type: string
         enum:
           - active
-          - inactive
+          - expired
+          - depleted
       description: Filter medicine batches by status
     ExpiredParam:
       name: is_expired
@@ -1283,12 +1518,495 @@ components:
           type: string
           nullable: true
           example: 'Penicillin, Peanuts'
+    UpdatePatientRequest:
+      type: object
+      required:
+        - id
+        - full_name
+        - date_of_birth
+        - gender
+        - patient_type
+        - phone_number
+      properties:
+        id:
+          type: string
+          example: '1234567890'
+        full_name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: John Doe
+        date_of_birth:
+          type: string
+          format: date
+          example: '1990-01-15'
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+            - other
+          example: male
+        patient_type:
+          type: string
+          enum:
+            - teacher
+            - student
+            - general
+          example: general
+        phone_number:
+          type: string
+          example: '+62812345678'
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: patient@example.com
+        address:
+          type: string
+          nullable: true
+          example: 'Jl. Contoh No. 123, Jakarta'
+        medical_record_number:
+          type: string
+          nullable: true
+          example: MR-2024-001
+        emergency_contact_name:
+          type: string
+          nullable: true
+          example: Jane Doe
+        emergency_contact_phone:
+          type: string
+          nullable: true
+          example: '+62812345679'
+        blood_type:
+          type: string
+          nullable: true
+          enum:
+            - A+
+            - A-
+            - B+
+            - B-
+            - AB+
+            - AB-
+            - O+
+            - O-
+          example: O+
+        allergies:
+          type: string
+          nullable: true
+          example: 'Penicillin, Peanuts'
+    PatientCheckup:
+      type: object
+      required:
+        - id
+        - patient_id
+        - visit_date
+        - status
+        - chief_complaint
+        - symptoms
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 223e4567-e89b-12d3-a456-426614174111
+          description: Checkup UUID
+        patient_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          description: Patient UUID
+        visit_date:
+          type: string
+          format: date-time
+          example: '2026-03-02T10:15:00Z'
+          description: Planned visit date and time
+        status:
+          type: string
+          enum:
+            - scheduled
+            - completed
+            - cancelled
+          example: scheduled
+          description: Visit workflow status
+        chief_complaint:
+          type: string
+          example: Demam sejak 2 hari
+          description: Main complaint reported when booking
+        symptoms:
+          type: array
+          items:
+            type: string
+          example:
+            - demam
+            - batuk
+            - pusing
+          description: Symptoms recorded and editable by admin/doctor
+        diagnosis:
+          type: string
+          nullable: true
+          example: Infeksi saluran pernapasan atas
+          description: Clinical diagnosis
+        temperature_c:
+          type: number
+          format: float
+          minimum: 30
+          maximum: 45
+          nullable: true
+          example: 38.4
+          description: Body temperature in celsius
+        blood_pressure:
+          type: string
+          nullable: true
+          example: 120/80
+          description: Blood pressure reading
+        heart_rate:
+          type: integer
+          minimum: 0
+          nullable: true
+          example: 86
+          description: Heart rate (bpm)
+        respiratory_rate:
+          type: integer
+          minimum: 0
+          nullable: true
+          example: 18
+          description: Respiratory rate (per minute)
+        oxygen_saturation:
+          type: integer
+          minimum: 0
+          maximum: 100
+          nullable: true
+          example: 98
+          description: SpO2 percentage
+        height_cm:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+          example: 170
+          description: Height in cm
+        weight_kg:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+          example: 65.5
+          description: Weight in kg
+        medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientCheckupMedicine'
+          description: Prescribed medicines during this checkup
+        treatment_plan:
+          type: string
+          nullable: true
+          example: 'Istirahat cukup, minum obat teratur, kontrol 3 hari'
+          description: Treatment and follow-up plan
+        notes:
+          type: string
+          nullable: true
+          example: Pasien memiliki riwayat alergi penicillin
+          description: Additional notes
+        doctor_name:
+          type: string
+          nullable: true
+          example: dr. Andi Pratama
+          description: Doctor handling the checkup
+        follow_up_date:
+          type: string
+          format: date
+          nullable: true
+          example: '2026-03-05'
+          description: Planned follow-up date
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updated_at:
+          type: string
+          format: date-time
+          description: Last update timestamp
+    PatientCheckupMedicine:
+      type: object
+      required:
+        - medicine_id
+        - medicine_name
+        - quantity
+        - dosage
+        - frequency
+        - duration_days
+      properties:
+        medicine_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          description: Medicine UUID
+        medicine_name:
+          type: string
+          example: Paracetamol
+          description: Snapshot medicine name when prescribed
+        quantity:
+          type: integer
+          minimum: 1
+          example: 10
+          description: Dispensed quantity from inventory
+        dosage:
+          type: string
+          example: 500 mg
+          description: Single dose amount
+        frequency:
+          type: string
+          example: 3x sehari
+          description: Frequency instruction
+        duration_days:
+          type: integer
+          minimum: 1
+          example: 5
+          description: Duration in days
+        notes:
+          type: string
+          nullable: true
+          example: Setelah makan
+          description: Additional usage notes
+    CreatePatientCheckupRequest:
+      type: object
+      required:
+        - patient_id
+        - visit_date
+        - chief_complaint
+        - symptoms
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        visit_date:
+          type: string
+          format: date-time
+          example: '2026-03-02T10:15:00Z'
+        chief_complaint:
+          type: string
+          example: Demam sejak 2 hari
+        symptoms:
+          type: array
+          items:
+            type: string
+          example:
+            - demam
+            - batuk
+            - pusing
+        notes:
+          type: string
+          nullable: true
+          example: Pasien minta jadwal pagi
+        status:
+          type: string
+          enum:
+            - scheduled
+            - completed
+            - cancelled
+          example: scheduled
+        diagnosis:
+          type: string
+          nullable: true
+          example: Infeksi saluran pernapasan atas
+        temperature_c:
+          type: number
+          format: float
+          minimum: 30
+          maximum: 45
+          nullable: true
+          example: 38.4
+        blood_pressure:
+          type: string
+          nullable: true
+          example: 120/80
+        heart_rate:
+          type: integer
+          minimum: 0
+          nullable: true
+          example: 86
+        respiratory_rate:
+          type: integer
+          minimum: 0
+          nullable: true
+          example: 18
+        oxygen_saturation:
+          type: integer
+          minimum: 0
+          maximum: 100
+          nullable: true
+          example: 98
+        height_cm:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+          example: 170
+        weight_kg:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+          example: 65.5
+        medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientCheckupMedicine'
+        treatment_plan:
+          type: string
+          nullable: true
+          example: 'Istirahat cukup, minum obat teratur, kontrol 3 hari'
+        doctor_name:
+          type: string
+          nullable: true
+          example: dr. Andi Pratama
+        follow_up_date:
+          type: string
+          format: date
+          nullable: true
+          example: '2026-03-05'
+        patient_allergies:
+          type: string
+          nullable: true
+          example: 'Penicillin, seafood'
+          description: Optional update for patient allergies from doctor's assessment
+        patient_blood_type:
+          type: string
+          nullable: true
+          enum:
+            - A+
+            - A-
+            - B+
+            - B-
+            - AB+
+            - AB-
+            - O+
+            - O-
+          example: O+
+          description: Optional update for patient blood type from doctor's assessment
+    UpdatePatientCheckupRequest:
+      type: object
+      required:
+        - visit_date
+        - chief_complaint
+        - symptoms
+        - status
+      properties:
+        visit_date:
+          type: string
+          format: date-time
+          example: '2026-03-02T10:15:00Z'
+        chief_complaint:
+          type: string
+          example: Demam sejak 2 hari
+        symptoms:
+          type: array
+          items:
+            type: string
+          example:
+            - demam
+            - batuk
+            - pusing
+        status:
+          type: string
+          enum:
+            - scheduled
+            - completed
+            - cancelled
+          example: scheduled
+        diagnosis:
+          type: string
+          nullable: true
+          example: Infeksi saluran pernapasan atas
+        temperature_c:
+          type: number
+          format: float
+          minimum: 30
+          maximum: 45
+          nullable: true
+          example: 38.4
+        blood_pressure:
+          type: string
+          nullable: true
+          example: 120/80
+        heart_rate:
+          type: integer
+          minimum: 0
+          nullable: true
+          example: 86
+        respiratory_rate:
+          type: integer
+          minimum: 0
+          nullable: true
+          example: 18
+        oxygen_saturation:
+          type: integer
+          minimum: 0
+          maximum: 100
+          nullable: true
+          example: 98
+        height_cm:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+          example: 170
+        weight_kg:
+          type: number
+          format: float
+          minimum: 0
+          nullable: true
+          example: 65.5
+        medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientCheckupMedicine'
+        treatment_plan:
+          type: string
+          nullable: true
+          example: 'Istirahat cukup, minum obat teratur, kontrol 3 hari'
+        doctor_name:
+          type: string
+          nullable: true
+          example: dr. Andi Pratama
+        follow_up_date:
+          type: string
+          format: date
+          nullable: true
+          example: '2026-03-05'
+        notes:
+          type: string
+          nullable: true
+          example: Jadwal diubah ke siang
+        patient_allergies:
+          type: string
+          nullable: true
+          example: 'Penicillin, seafood'
+          description: Optional update for patient allergies from doctor's assessment
+        patient_blood_type:
+          type: string
+          nullable: true
+          enum:
+            - A+
+            - A-
+            - B+
+            - B-
+            - AB+
+            - AB-
+            - O+
+            - O-
+          example: O+
+          description: Optional update for patient blood type from doctor's assessment
     Medicine:
       type: object
       required:
         - id
         - code
         - name
+        - current_stock
         - strength
         - dosage_form
         - is_prescription_required
@@ -1311,6 +2029,11 @@ components:
           maxLength: 255
           example: Paracetamol
           description: Medicine name
+        current_stock:
+          type: integer
+          minimum: 0
+          example: 120
+          description: Current total stock from all active batches
         strength:
           type: string
           example: 500 mg
@@ -1385,6 +2108,123 @@ components:
           type: string
           nullable: true
           example: Pain reliever and fever reducer
+    UpdateMedicineRequest:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - strength
+        - dosage_form
+        - is_prescription_required
+      properties:
+        id:
+          type: string
+          example: '1234567890'
+        code:
+          type: string
+          example: PARA-500-TAB
+        name:
+          type: string
+          minLength: 2
+          maxLength: 255
+          example: Paracetamol
+        strength:
+          type: string
+          example: 500 mg
+        dosage_form:
+          type: string
+          enum:
+            - tablet
+            - capsule
+            - syrup
+            - injection
+            - cream
+          example: tablet
+        is_prescription_required:
+          type: boolean
+          example: false
+        notes:
+          type: string
+          nullable: true
+          example: Pain reliever and fever reducer
+    MedicineStockActivity:
+      type: object
+      required:
+        - id
+        - medicine_id
+        - change_type
+        - source
+        - quantity_delta
+        - stock_before
+        - stock_after
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 423e4567-e89b-12d3-a456-426614174999
+          description: Stock activity UUID
+        medicine_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+          description: Related medicine UUID
+        medicine_batch_id:
+          type: string
+          format: uuid
+          nullable: true
+          example: 223e4567-e89b-12d3-a456-426614174111
+          description: Related batch UUID when applicable
+        patient_checkup_id:
+          type: string
+          format: uuid
+          nullable: true
+          example: 323e4567-e89b-12d3-a456-426614174222
+          description: Related patient checkup UUID when stock changed by checkup
+        change_type:
+          type: string
+          enum:
+            - increase
+            - decrease
+          example: decrease
+          description: Stock movement direction
+        source:
+          type: string
+          enum:
+            - admin
+            - patient_checkup
+          example: admin
+          description: Source of stock movement
+        quantity_delta:
+          type: integer
+          example: -7
+          description: Signed quantity delta (negative = decrease)
+        stock_before:
+          type: integer
+          minimum: 0
+          example: 25
+          description: Total medicine stock before change
+        stock_after:
+          type: integer
+          minimum: 0
+          example: 18
+          description: Total medicine stock after change
+        notes:
+          type: string
+          nullable: true
+          example: Manual adjustment by admin
+          description: Optional additional context
+        created_by_user_id:
+          type: string
+          format: uuid
+          nullable: true
+          example: 523e4567-e89b-12d3-a456-426614174333
+          description: User UUID that triggered this movement
+        created_at:
+          type: string
+          format: date-time
+          description: Activity creation timestamp
     MedicineBatch:
       type: object
       required:
@@ -1436,7 +2276,8 @@ components:
           type: string
           enum:
             - active
-            - inactive
+            - expired
+            - depleted
           example: active
           description: Batch status
         created_at:
@@ -1461,6 +2302,33 @@ components:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
+        batch_number:
+          type: string
+          example: BATCH-A-2024
+        expiration_date:
+          type: string
+          format: date
+          example: '2026-02-01'
+        stock:
+          type: integer
+          minimum: 0
+          example: 50
+        unit:
+          type: string
+          example: tablet
+        minimum_stock:
+          type: integer
+          minimum: 0
+          example: 10
+    UpdateMedicineBatchRequest:
+      type: object
+      required:
+        - batch_number
+        - expiration_date
+        - stock
+        - unit
+        - minimum_stock
+      properties:
         batch_number:
           type: string
           example: BATCH-A-2024

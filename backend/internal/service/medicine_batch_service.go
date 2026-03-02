@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type MedicineBatchService interface {
@@ -19,35 +21,67 @@ type MedicineBatchService interface {
 }
 
 type medicineBatchService struct {
-	repo  repository.MedicineBatchRepository
-	cache cache.Cache
+	repo                 repository.MedicineBatchRepository
+	cache                cache.Cache
+	db                   *gorm.DB
+	stockActivityService MedicineStockActivityService
 }
 
 func NewMedicineBatchService(
 	repo repository.MedicineBatchRepository,
 	cache cache.Cache,
+	db *gorm.DB,
+	stockActivityService MedicineStockActivityService,
 ) MedicineBatchService {
 	return &medicineBatchService{
-		repo:  repo,
-		cache: cache,
+		repo:                 repo,
+		cache:                cache,
+		db:                   db,
+		stockActivityService: stockActivityService,
 	}
 }
 
 func (s *medicineBatchService) CreateBatch(ctx context.Context, batch *models.MedicineBatch) error {
-	// Auto set status berdasarkan expiration date
-	if batch.ExpirationDate.Before(time.Now()) {
+	now := time.Now().UTC()
+	if batch.ExpirationDate.Before(now) {
 		batch.Status = "expired"
+	} else if batch.Quantity <= 0 {
+		batch.Status = "depleted"
 	} else {
 		batch.Status = "active"
 	}
 
-	if err := s.repo.Create(ctx, batch); err != nil {
+	if err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(batch).Error; err != nil {
+			return err
+		}
+
+		before, after, err := recalculateMedicineStockTx(tx, batch.MedicineID)
+		if err != nil {
+			return err
+		}
+
+		note := "Batch created by admin"
+		batchID := batch.ID.String()
+		if err := s.stockActivityService.LogStockChange(ctx, tx, MedicineStockChangeInput{
+			MedicineID:      batch.MedicineID,
+			MedicineBatchID: &batchID,
+			Source:          "admin",
+			QuantityDelta:   after - before,
+			StockBefore:     before,
+			StockAfter:      after,
+			Notes:           &note,
+			CreatedByUserID: GetActorUserID(ctx),
+		}); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
 		return err
 	}
 
-	s.cache.DeletePattern(ctx, "medicine_batches:list:*")
-	s.cache.DeletePattern(ctx, fmt.Sprintf("medicine:%s:batches:*", batch.MedicineID))
-
+	s.invalidateBatchCache(ctx, batch.MedicineID, batch.ID.String())
 	return nil
 }
 
@@ -128,25 +162,119 @@ func (s *medicineBatchService) UpdateBatch(ctx context.Context, id generated.IdP
 	batch.MedicineID = existing.MedicineID
 	batch.CreatedAt = existing.CreatedAt
 
-	if batch.ExpirationDate.Before(time.Now()) {
+	if batch.ExpirationDate.Before(time.Now().UTC()) {
 		batch.Status = "expired"
+	} else if batch.Quantity <= 0 {
+		batch.Status = "depleted"
+	} else {
+		batch.Status = "active"
 	}
 
-	if err := s.repo.Update(ctx, batch); err != nil {
+	oldQuantity := existing.Quantity
+	if err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Save(batch).Error; err != nil {
+			return err
+		}
+
+		before, after, err := recalculateMedicineStockTx(tx, batch.MedicineID)
+		if err != nil {
+			return err
+		}
+
+		note := "Batch updated by admin"
+		delta := batch.Quantity - oldQuantity
+		batchID := batch.ID.String()
+		if err := s.stockActivityService.LogStockChange(ctx, tx, MedicineStockChangeInput{
+			MedicineID:      batch.MedicineID,
+			MedicineBatchID: &batchID,
+			Source:          "admin",
+			QuantityDelta:   delta,
+			StockBefore:     before,
+			StockAfter:      after,
+			Notes:           &note,
+			CreatedByUserID: GetActorUserID(ctx),
+		}); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
 		return err
 	}
 
-	s.cache.Delete(ctx, fmt.Sprintf("medicine_batch:%s", id))
-	s.cache.DeletePattern(ctx, "medicine_batches:list:*")
+	s.invalidateBatchCache(ctx, batch.MedicineID, id.String())
 	return nil
 }
 
 func (s *medicineBatchService) DeleteBatch(ctx context.Context, id generated.IdParam) error {
-	if err := s.repo.Delete(ctx, id); err != nil {
+	existing, err := s.repo.FindByID(ctx, id)
+	if err != nil {
 		return err
 	}
 
-	s.cache.Delete(ctx, fmt.Sprintf("medicine_batch:%s", id))
-	s.cache.DeletePattern(ctx, "medicine_batches:list:*")
+	if err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Delete(&models.MedicineBatch{}, id).Error; err != nil {
+			return err
+		}
+
+		before, after, err := recalculateMedicineStockTx(tx, existing.MedicineID)
+		if err != nil {
+			return err
+		}
+
+		note := "Batch deleted by admin"
+		batchID := existing.ID.String()
+		if err := s.stockActivityService.LogStockChange(ctx, tx, MedicineStockChangeInput{
+			MedicineID:      existing.MedicineID,
+			MedicineBatchID: &batchID,
+			Source:          "admin",
+			QuantityDelta:   -existing.Quantity,
+			StockBefore:     before,
+			StockAfter:      after,
+			Notes:           &note,
+			CreatedByUserID: GetActorUserID(ctx),
+		}); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	s.invalidateBatchCache(ctx, existing.MedicineID, id.String())
 	return nil
+}
+
+func (s *medicineBatchService) invalidateBatchCache(ctx context.Context, medicineID, batchID string) {
+	s.cache.Delete(ctx, fmt.Sprintf("medicine_batch:%s", batchID))
+	s.cache.Delete(ctx, fmt.Sprintf("medicine:%s", medicineID))
+	s.cache.DeletePattern(ctx, "medicine_batches:list:*")
+	s.cache.DeletePattern(ctx, "medicines:list:*")
+	s.cache.DeletePattern(ctx, fmt.Sprintf("medicine:%s:batches:*", medicineID))
+}
+
+func recalculateMedicineStockTx(tx *gorm.DB, medicineID string) (before int, after int, err error) {
+	if err = tx.Model(&models.Medicine{}).
+		Where("id = ?", medicineID).
+		Select("current_stock").
+		Scan(&before).Error; err != nil {
+		return 0, 0, err
+	}
+
+	var total int64
+	if err = tx.Model(&models.MedicineBatch{}).
+		Where("medicine_id = ?", medicineID).
+		Select("COALESCE(SUM(quantity), 0)").
+		Scan(&total).Error; err != nil {
+		return 0, 0, err
+	}
+	after = int(total)
+
+	if err = tx.Model(&models.Medicine{}).
+		Where("id = ?", medicineID).
+		Update("current_stock", after).Error; err != nil {
+		return 0, 0, err
+	}
+
+	return before, after, nil
 }

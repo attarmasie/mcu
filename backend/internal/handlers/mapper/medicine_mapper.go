@@ -17,10 +17,11 @@ func ToGeneratedMedicine(m *models.Medicine) generated.Medicine {
 		Id:                     openapi_types.UUID(m.ID),
 		Name:                   m.Name,
 		Code:                   m.Code,
+		CurrentStock:           m.CurrentStock,
 		DosageForm:             generated.MedicineDosageForm(m.DosageForm),
 		Strength:               strength,
 		IsPrescriptionRequired: m.IsPrescriptionRequired,
-		Notes:                  m.Description,
+		Notes:                  m.Notes,
 		Status:                 generated.MedicineStatus(m.Status),
 		CreatedAt:              m.CreatedAt,
 		UpdatedAt:              m.UpdatedAt,
@@ -42,7 +43,8 @@ func ToModelMedicine(req generated.CreateMedicineRequest) *models.Medicine {
 		DosageForm:             string(req.DosageForm),
 		Strength:               &req.Strength,
 		IsPrescriptionRequired: req.IsPrescriptionRequired,
-		Description:            req.Notes,
+		Unit:                   string(req.DosageForm),
+		Notes:                  req.Notes,
 		Status:                 "active",
 	}
 }
