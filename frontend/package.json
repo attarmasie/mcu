@@ -12,6 +12,11 @@
     "generate:rbac": "tsx cmd/generate-rbac.ts ../contracts/openapi.bundled.yaml src/generated/rbac.ts"
   },
   "dependencies": {
+    "@opentelemetry/api": "latest",
+    "@opentelemetry/exporter-trace-otlp-http": "latest",
+    "@opentelemetry/resources": "latest",
+    "@opentelemetry/sdk-trace-base": "latest",
+    "@opentelemetry/sdk-trace-web": "latest",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-avatar": "^1.1.11",

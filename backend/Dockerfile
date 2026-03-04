@@ -28,6 +28,10 @@ FROM scratch
 # Set the working directory to the root
 WORKDIR /
 
+# Provide minimal process identity for OpenTelemetry resource detectors on scratch image.
+ENV USER=app
+ENV HOME=/
+
 # Copy the built binaries from the 'builder' stage
 COPY --from=builder /app/app .
 COPY --from=builder /app/seeder .

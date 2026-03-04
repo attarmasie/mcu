@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: "MCU Dashboards"
+    orgId: 1
+    folder: "MCU"
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/json

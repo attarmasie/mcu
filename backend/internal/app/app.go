@@ -1,6 +1,7 @@
 package app
 
 import (
+	"backend/internal/observability"
 	"context"
 	"fmt"
 	"log"
@@ -19,10 +20,11 @@ import (
 )
 
 type App struct {
-	config *config.Config
-	db     *gorm.DB
-	cache  cache.Cache
-	server *http.Server
+	config              *config.Config
+	db                  *gorm.DB
+	cache               cache.Cache
+	server              *http.Server
+	telemetryShutdownFn func(context.Context) error
 }
 
 func New() (*App, error) {
@@ -34,6 +36,10 @@ func New() (*App, error) {
 
 	app := &App{
 		config: cfg,
+	}
+
+	if err := app.initObservability(); err != nil {
+		return nil, fmt.Errorf("failed to initialize observability: %w", err)
 	}
 
 	// Initialize database
@@ -116,6 +122,16 @@ func (a *App) initServer() {
 	}
 }
 
+func (a *App) initObservability() error {
+	shutdownFn, err := observability.InitTracing(context.Background(), a.config.Observability.ServiceName)
+	if err != nil {
+		return err
+	}
+
+	a.telemetryShutdownFn = shutdownFn
+	return nil
+}
+
 func (a *App) Run() error {
 	// Channel to listen for errors
 	serverErrors := make(chan error, 1)
@@ -179,6 +195,14 @@ func (a *App) Shutdown(ctx context.Context) error {
 		log.Printf("Warning: Failed to close cache: %v", err)
 	} else {
 		log.Println("✓ Cache connection closed")
+	}
+
+	if a.telemetryShutdownFn != nil {
+		if err := a.telemetryShutdownFn(ctx); err != nil {
+			log.Printf("Warning: Failed to shutdown telemetry: %v", err)
+		} else {
+			log.Println("✓ Telemetry shutdown completed")
+		}
 	}
 
 	return nil

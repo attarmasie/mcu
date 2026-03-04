@@ -1,4 +1,99 @@
 services:
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/prometheus/rules:/etc/prometheus/rules:ro
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./config/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ./config/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+      - ./config/grafana/dashboards:/etc/grafana/provisioning/dashboards/json:ro
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    networks:
+      - monitoring
+
+  loki:
+    image: grafana/loki:3.3.2
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    user: "root"
+    volumes:
+      - ./config/loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/tmp/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - monitoring
+
+  tempo:
+    image: grafana/tempo:main-814c1c6
+    restart: unless-stopped
+    user: "root"
+    command: "-target=all -config.file=/etc/tempo.yaml"
+    volumes:
+      - ./config/tempo/tempo.yml:/etc/tempo.yaml:ro
+      - tempo-data:/tmp/tempo
+    ports:
+      - "3200:3200"
+      - "4317"
+      - "4318"
+    networks:
+      - monitoring
+
+  alloy:
+    image: grafana/alloy:latest
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "12345:12345"
+      - "4317:4317"
+      - "4318:4318"
+    volumes:
+      - ./config/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - /etc/alloy/config.alloy
+    depends_on:
+      - loki
+      - tempo
+    networks:
+      - monitoring
+
   postgres:
     image: postgres:15-alpine
     environment:
@@ -14,6 +109,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - monitoring
 
   redis:
     image: redis:7-alpine
@@ -27,6 +124,22 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - monitoring
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    restart: unless-stopped
+    ports:
+      - "9121:9121"
+    environment:
+      REDIS_ADDR: redis://redis:6379
+      REDIS_PASSWORD: redminote8
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - monitoring
 
   redisinsight:
     image: redis/redisinsight:latest
@@ -37,6 +150,21 @@ services:
         condition: service_healthy
     volumes:
       - redisinsight_data:/data
+    networks:
+      - monitoring
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    restart: unless-stopped
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: postgresql://admin:redminote8@postgres:5432/mcu_attarmasi?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - monitoring
 
   backend:
     build:
@@ -52,6 +180,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      alloy:
+        condition: service_started
+    networks:
+      - monitoring
 
   frontend:
     build:
@@ -63,6 +195,9 @@ services:
     # it relies on the `.env.production` file being copied into the frontend container.
     depends_on:
       - backend
+      - alloy
+    networks:
+      - monitoring
 
   swagger:
     image: swaggerapi/swagger-ui:latest
@@ -76,6 +211,8 @@ services:
       - "8080"
     depends_on:
       - backend
+    networks:
+      - monitoring
 
   swagger-proxy:
     build:
@@ -90,8 +227,17 @@ services:
       SWAGGER_PASSWORD: ${SWAGGER_PASSWORD:-adminmcuattarmasi}
     depends_on:
       - swagger
+    networks:
+      - monitoring
 
 volumes:
+  grafana-data:
+  loki-data:
+  tempo-data:
   postgres_data:
   redis_data:
   redisinsight_data:
+
+networks:
+  monitoring:
+    driver: bridge

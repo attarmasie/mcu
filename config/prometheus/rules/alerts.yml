@@ -1,0 +1,49 @@
+groups:
+  - name: mcu-backend-alerts
+    rules:
+      - alert: MCUBackendDown
+        expr: up{job="mcu-backend"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MCU backend is down"
+          description: "Prometheus cannot scrape mcu-backend for more than 2 minutes."
+
+      - alert: MCUHigh5xxErrorRate
+        expr: (sum(rate(http_requests_total{job="mcu-backend",status=~"5.."}[5m])) / sum(rate(http_requests_total{job="mcu-backend"}[5m]))) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 5xx error rate on MCU backend"
+          description: "5xx error ratio is above 5% for 5 minutes."
+
+      - alert: MCUHighLatencyP95
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="mcu-backend"}[5m])) by (le)) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High p95 latency on MCU backend"
+          description: "Backend p95 request latency is above 1 second for 10 minutes."
+
+  - name: mcu-dependencies-alerts
+    rules:
+      - alert: RedisExporterDown
+        expr: up{job="redis"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis exporter is down"
+          description: "Prometheus cannot scrape redis-exporter for more than 5 minutes."
+
+      - alert: PostgresExporterDown
+        expr: up{job="postgres"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Postgres exporter is down"
+          description: "Prometheus cannot scrape postgres-exporter for more than 5 minutes."

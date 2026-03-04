@@ -30,11 +30,14 @@ func (r *Router) Setup(isDevelopment bool) *gin.Engine {
 	router.Use(middleware.Recovery())
 	router.Use(middleware.CORS())
 	router.Use(middleware.RequestID())
-	router.Use(gin.Logger())
+	router.Use(middleware.OTelHTTP())
+	router.Use(middleware.AccessLog())
+	router.Use(middleware.PrometheusHTTPMetrics())
 	router.Use(middleware.RateLimit(100, time.Minute))
 
 	// Health check and welcome (public endpoints)
 	router.GET("/health", r.healthCheck)
+	router.GET("/metrics", middleware.PrometheusHandler())
 	router.GET("/", r.welcome)
 
 	// API v1 group with RBAC middleware

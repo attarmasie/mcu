@@ -35,6 +35,11 @@ Patient:
       enum: [teacher, student, general]
       example: "general"
       description: Patient type (teacher, student, or general)
+    hostel:
+      type: string
+      nullable: true
+      example: "Hostel A"
+      description: Hostel name if patient is a student
     phone_number:
       type: string
       example: "+62812345678"
@@ -111,6 +116,10 @@ CreatePatientRequest:
       type: string
       enum: [teacher, student, general]
       example: "general"
+    hostel:
+      type: string
+      nullable: true
+      example: "Hostel A"
     phone_number:
       type: string
       example: "+62812345678"
@@ -175,6 +184,10 @@ UpdatePatientRequest:
       type: string
       enum: [teacher, student, general]
       example: "general"
+    hostel:
+      type: string
+      nullable: true
+      example: "Hostel A"
     phone_number:
       type: string
       example: "+62812345678"

@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	Server   ServerConfig
-	Database DatabaseConfig
-	Redis    RedisConfig
+	Server        ServerConfig
+	Database      DatabaseConfig
+	Redis         RedisConfig
+	Observability ObservabilityConfig
 }
 
 type ServerConfig struct {
@@ -32,6 +33,10 @@ type RedisConfig struct {
 	Addr     string
 	Password string
 	DB       int
+}
+
+type ObservabilityConfig struct {
+	ServiceName string
 }
 
 func Load() (*Config, error) {
@@ -58,6 +63,9 @@ func Load() (*Config, error) {
 			Addr:     getEnv("REDIS_ADDR", "localhost:6379"),
 			Password: getEnv("REDIS_PASSWORD", ""),
 			DB:       0,
+		},
+		Observability: ObservabilityConfig{
+			ServiceName: getEnv("OTEL_SERVICE_NAME", "mcu-backend"),
 		},
 	}
 

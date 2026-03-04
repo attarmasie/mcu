@@ -8,8 +8,14 @@ import { Toaster } from "sonner";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { FormDevtoolsPanel } from "@tanstack/react-form-devtools";
+import {
+  initFrontendErrorMonitoring,
+  initTelemetry,
+} from "./observability/telemetry";
 
 const queryClient = new QueryClient();
+initTelemetry();
+initFrontendErrorMonitoring();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -31,5 +37,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       />
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
