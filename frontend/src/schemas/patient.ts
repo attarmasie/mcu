@@ -6,11 +6,9 @@ export const createPatientSchema = z.object({
     .min(2, "Name must be at least 2 characters")
     .max(255, "Name must be at most 255 characters"),
   date_of_birth: z.string().min(1, "Date of birth is required"),
-  gender: z
-    .enum(["male", "female", "other"])
-    .refine((val) => val !== null, {
-      message: "Gender is required",
-    }),
+  gender: z.enum(["male", "female", "other"]).refine((val) => val !== null, {
+    message: "Gender is required",
+  }),
   patient_type: z
     .enum(["teacher", "student", "general"])
     .refine((val) => val !== null, {

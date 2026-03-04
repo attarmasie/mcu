@@ -13,6 +13,7 @@ type CombinedHandler struct {
 	*AuthHandler
 	*MedicineHandler
 	*MedicineBatchHandler
+	*DashboardHandler
 }
 
 func NewCombinedHandler(

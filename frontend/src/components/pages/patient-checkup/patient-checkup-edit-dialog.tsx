@@ -31,6 +31,7 @@ import { usePatientCheckupUpdate } from "@/hooks/use-patient-checkup";
 import { bloodTypeOptions } from "@/schemas/patient";
 import {
   patientCheckupStatusOptions,
+  type UpdatePatientCheckupFormInput,
   type UpdatePatientCheckupFormData,
   updatePatientCheckupSchema,
 } from "@/schemas/patient-checkup";
@@ -78,7 +79,11 @@ export function PatientCheckupEditDialog({
   });
   const patient = patientResp?.data;
 
-  const form = useForm<UpdatePatientCheckupFormData>({
+  const form = useForm<
+    UpdatePatientCheckupFormInput,
+    unknown,
+    UpdatePatientCheckupFormData
+  >({
     resolver: zodResolver(updatePatientCheckupSchema),
     defaultValues: {
       visit_date: "",
@@ -143,7 +148,6 @@ export function PatientCheckupEditDialog({
         follow_up_date: checkup.follow_up_date || "",
         notes: checkup.notes || "",
       });
-      setStockError(null);
     }
   }, [checkup, form, open, patient]);
 
@@ -217,12 +221,20 @@ export function PatientCheckupEditDialog({
         patient_blood_type: data.patient_blood_type || null,
       });
       onOpenChange(false);
-    } catch {}
+    } catch {
+      return;
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!w-[84vw] !max-w-6xl max-h-[80vh] overflow-y-auto">
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setStockError(null);
+        onOpenChange(nextOpen);
+      }}
+    >
+      <DialogContent className="w-[84vw]! max-w-6xl! max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Patient Checkup</DialogTitle>
           <DialogDescription>

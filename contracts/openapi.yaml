@@ -27,6 +27,8 @@ tags:
     description: Medicine master data management
   - name: medicine_batches
     description: Medicine batch and inventory management
+  - name: dashboard
+    description: Dashboard statistics
 
 paths:
   /auth/register:
@@ -70,6 +72,9 @@ paths:
 
   /medicine-batches/{id}:
     $ref: "./paths/medicine_batches.yaml#/medicine_batches_by_id"
+
+  /dashboard/stats:
+    $ref: "./paths/dashboard.yaml#/dashboard_stats"
 
 components:
   parameters:
@@ -206,6 +211,20 @@ components:
       $ref: "./schemas/medicine_batch.yaml#/CreateMedicineBatchRequest"
     UpdateMedicineBatchRequest:
       $ref: "./schemas/medicine_batch.yaml#/UpdateMedicineBatchRequest"
+
+    # Dashboard
+    DashboardStats:
+      $ref: "./schemas/dashboard.yaml#/DashboardStats"
+    LowStockMedicine:
+      $ref: "./schemas/dashboard.yaml#/LowStockMedicine"
+    RecentCheckup:
+      $ref: "./schemas/dashboard.yaml#/RecentCheckup"
+    CheckupStatusSummary:
+      $ref: "./schemas/dashboard.yaml#/CheckupStatusSummary"
+    PatientTypeStat:
+      $ref: "./schemas/dashboard.yaml#/PatientTypeStat"
+    ExpiringBatch:
+      $ref: "./schemas/dashboard.yaml#/ExpiringBatch"
 
   securitySchemes:
     BearerAuth:

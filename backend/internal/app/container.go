@@ -16,6 +16,7 @@ type Container struct {
 	AuthHandler           *handlers.AuthHandler
 	MedicineHandler       *handlers.MedicineHandler
 	MedicineBatchHandler  *handlers.MedicineBatchHandler
+	DashboardHandler      *handlers.DashboardHandler
 }
 
 func NewContainer(db *gorm.DB, cache cache.Cache) *Container {
@@ -26,6 +27,7 @@ func NewContainer(db *gorm.DB, cache cache.Cache) *Container {
 	medicineRepo := repository.NewMedicineRepository(db)
 	medicineBatchRepo := repository.NewMedicineBatchRepository(db)
 	medicineStockActivityRepo := repository.NewMedicineStockActivityRepository(db)
+	dashboardRepo := repository.NewDashboardRepository(db)
 
 	// services
 	userService := service.NewUserService(userRepo, cache)
@@ -35,6 +37,7 @@ func NewContainer(db *gorm.DB, cache cache.Cache) *Container {
 	authService := service.NewAuthService(userRepo)
 	medicineService := service.NewMedicineService(medicineRepo, cache)
 	medicineBatchService := service.NewMedicineBatchService(medicineBatchRepo, cache, db, medicineStockActivityService)
+	dashboardService := service.NewDashboardService(dashboardRepo)
 
 	// handlers
 	userHandler := handlers.NewUserHandler(userService)
@@ -43,6 +46,7 @@ func NewContainer(db *gorm.DB, cache cache.Cache) *Container {
 	authHandler := handlers.NewAuthHandler(authService)
 	medicineHandler := handlers.NewMedicineHandler(medicineService, medicineStockActivityService)
 	medicineBatchHandler := handlers.NewMedicineBatchHandler(medicineBatchService)
+	dashboardHandler := handlers.NewDashboardHandler(dashboardService)
 
 	return &Container{
 		UserHandler:           userHandler,
@@ -51,6 +55,7 @@ func NewContainer(db *gorm.DB, cache cache.Cache) *Container {
 		AuthHandler:           authHandler,
 		MedicineHandler:       medicineHandler,
 		MedicineBatchHandler:  medicineBatchHandler,
+		DashboardHandler:      dashboardHandler,
 	}
 }
 
@@ -62,5 +67,6 @@ func (c *Container) Handlers() *handlers.CombinedHandler {
 		AuthHandler:           c.AuthHandler,
 		MedicineHandler:       c.MedicineHandler,
 		MedicineBatchHandler:  c.MedicineBatchHandler,
+		DashboardHandler:      c.DashboardHandler,
 	}
 }

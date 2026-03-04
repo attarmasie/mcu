@@ -87,7 +87,7 @@ func (r *patientCheckupRepository) FindAll(ctx context.Context, page, perPage in
 	}
 
 	err := query.
-		Order("visit_date DESC").
+		Order("visit_date DESC, created_at DESC").
 		Offset(offset).
 		Limit(perPage).
 		Find(&checkups).Error

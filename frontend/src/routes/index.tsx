@@ -8,6 +8,7 @@ import { loginSchema } from "@/schemas/auth.schema";
 import { zodValidator } from "@/lib/zod-form-validator";
 import { useAuth } from "@/hooks/use-auth";
 import { AuthMiddleware } from "@/middleware/auth.middleware";
+import { HeartPulse } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   beforeLoad: AuthMiddleware,
@@ -39,7 +40,13 @@ const LoginPage = () => {
     <div className="flex min-h-screen items-center justify-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle className="text-center">Login</CardTitle>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-green-600 text-white">
+              <HeartPulse className="size-6" />
+            </div>
+            <CardTitle className="text-center text-xl">Klinik Attarmasi</CardTitle>
+            <p className="text-center text-sm text-muted-foreground">Sistem Manajemen Klinik</p>
+          </div>
         </CardHeader>
 
         <CardContent>

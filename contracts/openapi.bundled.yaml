@@ -24,6 +24,8 @@ tags:
     description: Medicine master data management
   - name: medicine_batches
     description: Medicine batch and inventory management
+  - name: dashboard
+    description: Dashboard statistics
 paths:
   /auth/register:
     post:
@@ -865,6 +867,32 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      summary: Get dashboard statistics
+      description: Retrieve aggregated statistics for the clinic dashboard
+      tags:
+        - dashboard
+      security:
+        - BearerAuth:
+            - admin
+            - doctor
+            - operator
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DashboardStats'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   parameters:
     PageParam:
@@ -2354,6 +2382,175 @@ components:
         unit:
           type: string
           example: tablet
+    DashboardStats:
+      type: object
+      required:
+        - total_patients
+        - total_medicines
+        - total_checkups_today
+        - checkup_status_today
+        - checkup_status_week
+        - low_stock_medicines
+        - recent_checkups
+        - patient_type_summary
+        - expiring_batches
+      properties:
+        total_patients:
+          type: integer
+          format: int64
+          example: 150
+          description: Total number of registered patients
+        total_medicines:
+          type: integer
+          format: int64
+          example: 45
+          description: Total number of active medicines
+        total_checkups_today:
+          type: integer
+          format: int64
+          example: 12
+          description: Number of checkups today
+        checkup_status_today:
+          $ref: '#/components/schemas/CheckupStatusSummary'
+        checkup_status_week:
+          $ref: '#/components/schemas/CheckupStatusSummary'
+        low_stock_medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/LowStockMedicine'
+        recent_checkups:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecentCheckup'
+        patient_type_summary:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientTypeStat'
+        expiring_batches:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpiringBatch'
+    LowStockMedicine:
+      type: object
+      required:
+        - id
+        - name
+        - code
+        - current_stock
+        - minimum_stock
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        name:
+          type: string
+          example: Paracetamol
+        code:
+          type: string
+          example: PARA-500-TAB
+        current_stock:
+          type: integer
+          example: 5
+        minimum_stock:
+          type: integer
+          example: 10
+    RecentCheckup:
+      type: object
+      required:
+        - id
+        - patient_name
+        - chief_complaint
+        - status
+        - visit_date
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        patient_name:
+          type: string
+          example: John Doe
+        chief_complaint:
+          type: string
+          example: Headache
+        status:
+          type: string
+          enum:
+            - scheduled
+            - completed
+            - cancelled
+          example: completed
+        visit_date:
+          type: string
+          format: date-time
+          example: '2026-03-02T09:00:00Z'
+        doctor_name:
+          type: string
+          nullable: true
+          example: Dr. Smith
+    CheckupStatusSummary:
+      type: object
+      required:
+        - scheduled
+        - completed
+        - cancelled
+      properties:
+        scheduled:
+          type: integer
+          format: int64
+          example: 10
+        completed:
+          type: integer
+          format: int64
+          example: 65
+        cancelled:
+          type: integer
+          format: int64
+          example: 12
+    PatientTypeStat:
+      type: object
+      required:
+        - patient_type
+        - count
+      properties:
+        patient_type:
+          type: string
+          enum:
+            - teacher
+            - student
+            - general
+          example: student
+        count:
+          type: integer
+          format: int64
+          example: 50
+    ExpiringBatch:
+      type: object
+      required:
+        - id
+        - medicine_name
+        - batch_number
+        - expiration_date
+        - quantity
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        medicine_name:
+          type: string
+          example: Paracetamol
+        batch_number:
+          type: string
+          example: BATCH-2026-001
+        expiration_date:
+          type: string
+          format: date-time
+          example: '2026-03-30T00:00:00Z'
+        quantity:
+          type: integer
+          example: 50
   securitySchemes:
     BearerAuth:
       type: http

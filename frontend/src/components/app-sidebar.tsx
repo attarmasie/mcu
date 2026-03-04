@@ -18,7 +18,7 @@ import {
   filterNavigationByPermissions,
   NAVIGATION,
 } from "@/constants/navigation";
-import { GalleryVerticalEnd } from "lucide-react";
+import { HeartPulse } from "lucide-react";
 import { ENV } from "@/constants/env";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -39,8 +39,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   const team = {
-    name: "Acme Inc",
-    logo: GalleryVerticalEnd,
+    name: "Klinik Attarmasi",
+    logo: HeartPulse,
+    plan: "Sistem Manajemen Klinik",
   };
 
   if (isLoading) {

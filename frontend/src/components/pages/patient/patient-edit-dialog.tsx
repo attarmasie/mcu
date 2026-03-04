@@ -77,14 +77,17 @@ export function PatientEditDialog({
           ? new Date(patient.date_of_birth).toISOString().split("T")[0]
           : "",
         gender: patient.gender as CreatePatientFormData["gender"],
-        patient_type: patient.patient_type as CreatePatientFormData["patient_type"],
+        patient_type:
+          patient.patient_type as CreatePatientFormData["patient_type"],
         phone_number: patient.phone_number,
         email: patient.email ?? "",
         address: patient.address ?? "",
         medical_record_number: patient.medical_record_number ?? "",
         emergency_contact_name: patient.emergency_contact_name ?? "",
         emergency_contact_phone: patient.emergency_contact_phone ?? "",
-        blood_type: patient.blood_type as CreatePatientFormData["blood_type"] | undefined,
+        blood_type: patient.blood_type as
+          | CreatePatientFormData["blood_type"]
+          | undefined,
         allergies: patient.allergies ?? "",
       });
     }
@@ -93,7 +96,12 @@ export function PatientEditDialog({
   const onSubmit = (data: CreatePatientFormData) => {
     if (patient.id) {
       updatePatient(patient.id, {
-        ...data,
+        id: patient.id,
+        full_name: data.full_name,
+        date_of_birth: data.date_of_birth,
+        gender: data.gender,
+        patient_type: data.patient_type,
+        phone_number: data.phone_number,
         email: data.email || null,
         address: data.address || null,
         medical_record_number: data.medical_record_number || null,
@@ -112,7 +120,8 @@ export function PatientEditDialog({
         <DialogHeader>
           <DialogTitle>Edit Patient</DialogTitle>
           <DialogDescription>
-            Update the patient information below. Fields marked with * are required.
+            Update the patient information below. Fields marked with * are
+            required.
           </DialogDescription>
         </DialogHeader>
 

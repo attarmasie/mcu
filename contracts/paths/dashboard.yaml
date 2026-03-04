@@ -1,0 +1,23 @@
+dashboard_stats:
+  get:
+    operationId: getDashboardStats
+    summary: Get dashboard statistics
+    description: Retrieve aggregated statistics for the clinic dashboard
+    tags:
+      - dashboard
+    security:
+      - BearerAuth: [admin, doctor, operator]
+    responses:
+      "200":
+        description: Success
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "../schemas/dashboard.yaml#/DashboardStats"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"

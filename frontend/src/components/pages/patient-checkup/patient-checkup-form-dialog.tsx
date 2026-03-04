@@ -32,13 +32,14 @@ import { usePatientCheckupCreate } from "@/hooks/use-patient-checkup";
 import { bloodTypeOptions } from "@/schemas/patient";
 import {
   createPatientCheckupSchema,
+  type CreatePatientCheckupFormInput,
   patientCheckupStatusOptions,
   type CreatePatientCheckupFormData,
 } from "@/schemas/patient-checkup";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, PlusCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { PatientClinicalSummary } from "./patient-clinical-summary";
 import type { Role } from "@/generated/rbac";
 
@@ -57,7 +58,7 @@ export function PatientCheckupFormDialog() {
   const [open, setOpen] = useState(false);
   const { getCurrentUser } = useAuth();
   const user = getCurrentUser();
-  const userRole: Role | string = user?.role || "user";
+  const userRole: Role | string = user?.user?.role || "user";
   const isDoctor = userRole === "doctor";
 
   const { createPatientCheckup, isCreating } = usePatientCheckupCreate();
@@ -65,7 +66,11 @@ export function PatientCheckupFormDialog() {
   const { data: medicines } = useMedicineList({ page: 1, per_page: 100 });
   const [stockError, setStockError] = useState<string | null>(null);
 
-  const form = useForm<CreatePatientCheckupFormData>({
+  const form = useForm<
+    CreatePatientCheckupFormInput,
+    unknown,
+    CreatePatientCheckupFormData
+  >({
     resolver: zodResolver(createPatientCheckupSchema),
     defaultValues: {
       patient_id: "",
@@ -83,7 +88,7 @@ export function PatientCheckupFormDialog() {
       weight_kg: undefined,
       medicines: [],
       treatment_plan: "",
-      doctor_name: isDoctor ? user?.full_name || "" : "",
+      doctor_name: isDoctor ? "Dr. " : "",
       follow_up_date: "",
       notes: "",
       patient_allergies: "",
@@ -91,7 +96,10 @@ export function PatientCheckupFormDialog() {
     },
   });
 
-  const selectedPatientId = form.watch("patient_id");
+  const selectedPatientId = useWatch({
+    control: form.control,
+    name: "patient_id",
+  });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -132,8 +140,8 @@ export function PatientCheckupFormDialog() {
       visit_date: toIsoFromDatetimeLocal(data.visit_date),
       chief_complaint: data.chief_complaint,
       symptoms: toSymptomArray(data.symptoms),
-      notes: data.notes || null,
       status: data.status,
+      notes: data.notes || null,
       diagnosis: data.diagnosis || null,
       temperature_c: data.temperature_c ?? null,
       blood_pressure: data.blood_pressure || null,
@@ -177,7 +185,7 @@ export function PatientCheckupFormDialog() {
           Add Patient Checkup
         </Button>
       </DialogTrigger>
-      <DialogContent className="!w-[96vw] !max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[96vw]! max-w-4xl! max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create Patient Checkup</DialogTitle>
           <DialogDescription>
